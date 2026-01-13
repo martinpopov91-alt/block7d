@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="theme-color" content="#0f172a">
-    <title>7D Finance (Final Version)</title>
+    <title>7D Finance (Bill Tracking)</title>
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -17,9 +17,7 @@
             theme: {
                 extend: {
                     fontFamily: { sans: ['"Plus Jakarta Sans"', 'sans-serif'] },
-                    colors: {
-                        slate: { 850: '#1e293b', 900: '#0f172a' },
-                    }
+                    colors: { slate: { 850: '#1e293b', 900: '#0f172a' } }
                 }
             }
         }
@@ -28,15 +26,14 @@
     <style>
         body { background-color: #f8fafc; }
         .glass-panel { background: rgba(255, 255, 255, 0.9); backdrop-filter: blur(12px); border-bottom: 1px solid rgba(226, 232, 240, 0.8); }
-        .sticky-col { position: sticky; left: 0; background: white; z-index: 10; border-right: 2px solid #f1f5f9; box-shadow: 4px 0 6px -4px rgba(0,0,0,0.1); }
+        
+        .sticky-col-check { position: sticky; left: 0; background: white; z-index: 20; border-right: 1px solid #e2e8f0; }
+        .sticky-col-apt { position: sticky; left: 40px; background: white; z-index: 20; border-right: 2px solid #f1f5f9; box-shadow: 4px 0 6px -4px rgba(0,0,0,0.1); }
+        
         input, select { -webkit-appearance: none; appearance: none; outline: none; }
         
-        /* Statuses */
         .badge-paid { background: #dcfce7; color: #166534; border: 1px solid #bbf7d0; font-weight: 700; }
         .badge-unpaid { background: #fee2e2; color: #991b1b; border: 1px solid #fecaca; font-weight: 700; }
-        .rep-paid { background: #dcfce7; color: #166534; }
-        .rep-partial { background: #ffedd5; color: #9a3412; }
-        .rep-unpaid { background: #fee2e2; color: #991b1b; }
 
         .mode-eur input { color: #2563eb; }
         .mode-bgn input { color: #334155; }
@@ -44,23 +41,29 @@
         .loader { border: 3px solid #f3f3f3; border-radius: 50%; border-top: 3px solid #3b82f6; width: 20px; height: 20px; animation: spin 1s linear infinite; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
-        /* Table Styling */
-        tr:nth-child(even) td:not(.sticky-col) { background-color: #f8fafc; }
+        .custom-checkbox { width: 20px; height: 20px; cursor: pointer; accent-color: #2563eb; margin: 0 auto; display: block; border-radius: 4px; }
+        .row-selected td { background-color: #eff6ff !important; }
+
+        /* Bill Status Toggle Styles */
+        .bill-btn { transition: all 0.2s; }
+        .bill-btn-unpaid { color: #cbd5e1; background: #f8fafc; border: 1px solid #e2e8f0; }
+        .bill-btn-unpaid:hover { color: #94a3b8; border-color: #cbd5e1; }
+        .bill-btn-paid { color: #16a34a; background: #dcfce7; border: 1px solid #bbf7d0; box-shadow: 0 2px 4px rgba(22, 163, 74, 0.1); }
+
+        tr:nth-child(even) td:not(.sticky-col-check):not(.sticky-col-apt) { background-color: #f8fafc; }
         tr:hover td { background-color: #f1f5f9; transition: background 0.1s; }
         .input-cell { transition: all 0.2s; border-radius: 6px; padding: 4px; }
         .input-cell:focus { background: white; box-shadow: 0 0 0 2px #bfdbfe; }
 
-        /* PRINT STYLES */
         @media print {
             body { background: white; padding: 0; font-size: 11px; }
-            nav, .no-print, #monthsGrid, button, #syncModal, #reportModal { display: none !important; }
+            nav, .no-print, #monthsGrid, button, #settingsModal, #reportModal, #bulkPayModal, .custom-checkbox, .sticky-col-check, .bill-status-icon { display: none !important; }
             .print-only { display: block !important; }
-            input { border: none; background: transparent; padding: 0; font-weight: bold; text-align: right; }
-            textarea { border: none; resize: none; height: auto; }
+            input { border: none; background: transparent; padding: 0; font-weight: bold; text-align: right; color: black !important; }
+            textarea { border: none; resize: none; height: auto; color: black !important; }
             .shadow-sm, .shadow-lg, .shadow-xl { box-shadow: none !important; border: 1px solid #ccc; }
             main { margin: 0; padding: 0; max-width: 100%; }
-            .sticky-col { position: static; border: none; box-shadow: none; }
-            
+            .sticky-col-apt { position: static; border: none; box-shadow: none; }
             .grid-cols-1, .grid-cols-2, .grid-cols-3, .grid-cols-4 { display: block; } 
             .fund-print-container { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 20px; }
             .expenses-print-container { display: flex; gap: 20px; }
@@ -87,7 +90,7 @@
                     <span id="currencyLabel">BGN</span>
                     <i class="ri-exchange-line"></i>
                 </button>
-                <button onclick="document.getElementById('syncModal').classList.remove('hidden')" class="p-2 bg-slate-800 text-white rounded-lg shadow-lg hover:bg-slate-700 transition active:scale-95" title="Настройки">
+                <button onclick="openSettings()" class="p-2 bg-slate-800 text-white rounded-lg shadow-lg hover:bg-slate-700 transition active:scale-95" title="Настройки">
                     <i class="ri-settings-4-fill"></i>
                 </button>
             </div>
@@ -187,11 +190,37 @@
 
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 relative no-print">
             <div class="absolute -top-3 right-2 bg-slate-100 text-slate-500 px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wide border border-slate-200 shadow-sm z-10" id="inputHint">Входни данни (BGN)</div>
-            <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm space-y-2"><h3 class="text-xs font-black text-blue-600 uppercase mb-3">⚡ Общи Разходи</h3><div class="flex justify-between items-center"><span class="text-xs font-medium text-slate-500">Ток Вход</span><input id="c_tok_vhod" type="number" value="19.21" class="input-cell w-20 text-right bg-slate-50 border border-slate-200 rounded font-bold text-sm"></div><div class="flex justify-between items-center"><span class="text-xs font-medium text-slate-500">Ток Асансьор</span><input id="c_tok_lift" type="number" value="56.89" class="input-cell w-20 text-right bg-slate-50 border border-slate-200 rounded font-bold text-sm"></div><div class="flex justify-between items-center"><span class="text-xs font-medium text-slate-500">Ток на Абонатна</span><input id="c_tok_abonatna" type="number" value="101.56" class="input-cell w-20 text-right bg-slate-50 border border-slate-200 rounded font-bold text-sm"></div><div class="flex justify-between items-center"><span class="text-xs font-medium text-slate-500">М.такса Асансьор</span><input id="c_lift_month" type="number" value="75.00" class="input-cell w-20 text-right bg-slate-50 border border-slate-200 rounded font-bold text-sm"></div><div class="flex justify-between items-center"><span class="text-xs font-medium text-slate-500">Такса почистване на вход</span><input id="c_clean_vhod" type="number" value="140.00" class="input-cell w-20 text-right bg-slate-50 border border-slate-200 rounded font-bold text-sm"></div></div>
-            <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm space-y-2"><h3 class="text-xs font-black text-blue-600 uppercase mb-3">🔧 Годишни</h3><div class="flex justify-between items-center"><span class="text-xs font-medium text-slate-500">Годишна такса Свързаност Асансьор</span><input id="c_lift_conn" type="number" value="72.00" class="input-cell w-20 text-right bg-slate-50 border border-slate-200 rounded font-bold text-sm" onchange="calculate()"></div><div class="text-right text-[10px] text-blue-400 font-medium -mt-1 pr-1" id="hint_conn"></div><div class="flex justify-between items-center"><span class="text-xs font-medium text-slate-500">Г.Технически преглед на
-асансьорна</span><input id="c_lift_tech" type="number" value="90.00" class="input-cell w-20 text-right bg-slate-50 border border-slate-200 rounded font-bold text-sm" onchange="calculate()"></div><div class="text-right text-[10px] text-blue-400 font-medium -mt-1 pr-1" id="hint_tech"></div></div>
-            <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm space-y-2"><h3 class="text-xs font-black text-amber-600 uppercase mb-3">🚗 Гараж</h3><div class="flex justify-between items-center"><span class="text-xs font-medium text-slate-500">Ток Подземен Гараж </span><input id="c_tok_garaj" type="number" value="60.00" class="input-cell w-20 text-right bg-slate-50 border border-slate-200 rounded font-bold text-sm"></div><div class="flex justify-between items-center"><span class="text-xs font-medium text-slate-500">Почистване на гаража</span><input id="c_clean_garaj" type="number" value="175.00" class="input-cell w-20 text-right bg-slate-50 border border-slate-200 rounded font-bold text-sm"></div></div>
-            <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm space-y-2"><h3 class="text-xs font-black text-emerald-600 uppercase mb-3">🌱 Други</h3><div class="flex justify-between items-center"><span class="text-xs font-medium text-slate-500">Косене</span><input id="c_mowing" type="number" value="100.00" class="input-cell w-20 text-right bg-slate-50 border border-slate-200 rounded font-bold text-sm"></div><div class="flex justify-between items-center"><span class="text-xs font-medium text-slate-500">Септична яма</span><input id="c_septic" type="number" value="100.00" class="input-cell w-20 text-right bg-slate-50 border border-slate-200 rounded font-bold text-sm"></div><div class="flex justify-between items-center"><span class="text-xs font-medium text-slate-500">Почистване на комплекса</span><input id="c_clean_complex" type="number" value="80.00" class="input-cell w-20 text-right bg-slate-50 border border-slate-200 rounded font-bold text-sm"></div><div class="flex justify-between items-center"><span class="text-xs font-medium text-slate-500">Такса ремонтни дейности</span><input id="c_repair" type="number" value="200.00" class="input-cell w-20 text-right bg-slate-50 border border-slate-200 rounded font-bold text-sm"></div></div>
+            
+            <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm space-y-2">
+                <h3 class="text-xs font-black text-blue-600 uppercase mb-3">⚡ Общи Разходи</h3>
+                <div class="flex justify-between items-center"><span class="text-xs font-medium text-slate-500">Ток Вход</span><div class="flex gap-1 items-center"><input id="c_tok_vhod" type="number" value="19.21" class="input-cell w-20 text-right bg-slate-50 border border-slate-200 rounded font-bold text-sm"><button id="btn_paid_c_tok_vhod" onclick="toggleBillStatus('c_tok_vhod')" class="bill-btn bill-btn-unpaid w-6 h-6 flex items-center justify-center rounded-md" title="Маркирай като платено"><i class="ri-check-line"></i></button></div></div>
+                <div class="flex justify-between items-center"><span class="text-xs font-medium text-slate-500">Ток Асансьор</span><div class="flex gap-1 items-center"><input id="c_tok_lift" type="number" value="56.89" class="input-cell w-20 text-right bg-slate-50 border border-slate-200 rounded font-bold text-sm"><button id="btn_paid_c_tok_lift" onclick="toggleBillStatus('c_tok_lift')" class="bill-btn bill-btn-unpaid w-6 h-6 flex items-center justify-center rounded-md"><i class="ri-check-line"></i></button></div></div>
+                <div class="flex justify-between items-center"><span class="text-xs font-medium text-slate-500">Ток Абонатна</span><div class="flex gap-1 items-center"><input id="c_tok_abonatna" type="number" value="101.56" class="input-cell w-20 text-right bg-slate-50 border border-slate-200 rounded font-bold text-sm"><button id="btn_paid_c_tok_abonatna" onclick="toggleBillStatus('c_tok_abonatna')" class="bill-btn bill-btn-unpaid w-6 h-6 flex items-center justify-center rounded-md"><i class="ri-check-line"></i></button></div></div>
+                <div class="flex justify-between items-center"><span class="text-xs font-medium text-slate-500">М.такса Асансьор</span><div class="flex gap-1 items-center"><input id="c_lift_month" type="number" value="75.00" class="input-cell w-20 text-right bg-slate-50 border border-slate-200 rounded font-bold text-sm"><button id="btn_paid_c_lift_month" onclick="toggleBillStatus('c_lift_month')" class="bill-btn bill-btn-unpaid w-6 h-6 flex items-center justify-center rounded-md"><i class="ri-check-line"></i></button></div></div>
+                <div class="flex justify-between items-center"><span class="text-xs font-medium text-slate-500">Почистване вход</span><div class="flex gap-1 items-center"><input id="c_clean_vhod" type="number" value="140.00" class="input-cell w-20 text-right bg-slate-50 border border-slate-200 rounded font-bold text-sm"><button id="btn_paid_c_clean_vhod" onclick="toggleBillStatus('c_clean_vhod')" class="bill-btn bill-btn-unpaid w-6 h-6 flex items-center justify-center rounded-md"><i class="ri-check-line"></i></button></div></div>
+            </div>
+
+            <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm space-y-2">
+                <h3 class="text-xs font-black text-blue-600 uppercase mb-3">🔧 Годишни</h3>
+                <div class="flex justify-between items-center"><span class="text-xs font-medium text-slate-500">Свързаност Ас.</span><div class="flex gap-1 items-center"><input id="c_lift_conn" type="number" value="72.00" class="input-cell w-20 text-right bg-slate-50 border border-slate-200 rounded font-bold text-sm" onchange="calculate()"><button id="btn_paid_c_lift_conn" onclick="toggleBillStatus('c_lift_conn')" class="bill-btn bill-btn-unpaid w-6 h-6 flex items-center justify-center rounded-md"><i class="ri-check-line"></i></button></div></div>
+                <div class="text-right text-[10px] text-blue-400 font-medium -mt-1 pr-8" id="hint_conn"></div>
+                <div class="flex justify-between items-center"><span class="text-xs font-medium text-slate-500">Техн. преглед</span><div class="flex gap-1 items-center"><input id="c_lift_tech" type="number" value="90.00" class="input-cell w-20 text-right bg-slate-50 border border-slate-200 rounded font-bold text-sm" onchange="calculate()"><button id="btn_paid_c_lift_tech" onclick="toggleBillStatus('c_lift_tech')" class="bill-btn bill-btn-unpaid w-6 h-6 flex items-center justify-center rounded-md"><i class="ri-check-line"></i></button></div></div>
+                <div class="text-right text-[10px] text-blue-400 font-medium -mt-1 pr-8" id="hint_tech"></div>
+            </div>
+
+            <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm space-y-2">
+                <h3 class="text-xs font-black text-amber-600 uppercase mb-3">🚗 Гараж</h3>
+                <div class="flex justify-between items-center"><span class="text-xs font-medium text-slate-500">Ток Гараж</span><div class="flex gap-1 items-center"><input id="c_tok_garaj" type="number" value="60.00" class="input-cell w-20 text-right bg-slate-50 border border-slate-200 rounded font-bold text-sm"><button id="btn_paid_c_tok_garaj" onclick="toggleBillStatus('c_tok_garaj')" class="bill-btn bill-btn-unpaid w-6 h-6 flex items-center justify-center rounded-md"><i class="ri-check-line"></i></button></div></div>
+                <div class="flex justify-between items-center"><span class="text-xs font-medium text-slate-500">Почистване</span><div class="flex gap-1 items-center"><input id="c_clean_garaj" type="number" value="175.00" class="input-cell w-20 text-right bg-slate-50 border border-slate-200 rounded font-bold text-sm"><button id="btn_paid_c_clean_garaj" onclick="toggleBillStatus('c_clean_garaj')" class="bill-btn bill-btn-unpaid w-6 h-6 flex items-center justify-center rounded-md"><i class="ri-check-line"></i></button></div></div>
+            </div>
+
+            <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm space-y-2">
+                <h3 class="text-xs font-black text-emerald-600 uppercase mb-3">🌱 Други</h3>
+                <div class="flex justify-between items-center"><span class="text-xs font-medium text-slate-500">Косене</span><div class="flex gap-1 items-center"><input id="c_mowing" type="number" value="100.00" class="input-cell w-20 text-right bg-slate-50 border border-slate-200 rounded font-bold text-sm"><button id="btn_paid_c_mowing" onclick="toggleBillStatus('c_mowing')" class="bill-btn bill-btn-unpaid w-6 h-6 flex items-center justify-center rounded-md"><i class="ri-check-line"></i></button></div></div>
+                <div class="flex justify-between items-center"><span class="text-xs font-medium text-slate-500">Септична яма</span><div class="flex gap-1 items-center"><input id="c_septic" type="number" value="100.00" class="input-cell w-20 text-right bg-slate-50 border border-slate-200 rounded font-bold text-sm"><button id="btn_paid_c_septic" onclick="toggleBillStatus('c_septic')" class="bill-btn bill-btn-unpaid w-6 h-6 flex items-center justify-center rounded-md"><i class="ri-check-line"></i></button></div></div>
+                <div class="flex justify-between items-center"><span class="text-xs font-medium text-slate-500">Поч. комплекс</span><div class="flex gap-1 items-center"><input id="c_clean_complex" type="number" value="80.00" class="input-cell w-20 text-right bg-slate-50 border border-slate-200 rounded font-bold text-sm"><button id="btn_paid_c_clean_complex" onclick="toggleBillStatus('c_clean_complex')" class="bill-btn bill-btn-unpaid w-6 h-6 flex items-center justify-center rounded-md"><i class="ri-check-line"></i></button></div></div>
+                <div class="flex justify-between items-center"><span class="text-xs font-medium text-slate-500">Такса ремонт</span><div class="flex gap-1 items-center"><input id="c_repair" type="number" value="200.00" class="input-cell w-20 text-right bg-slate-50 border border-slate-200 rounded font-bold text-sm"></div></div>
+            </div>
         </div>
 
         <div class="grid grid-cols-2 lg:grid-cols-7 gap-3 no-print">
@@ -207,14 +236,17 @@
         <div class="bg-white rounded-xl shadow-lg shadow-slate-200 border border-slate-200 overflow-hidden ring-1 ring-black/5">
             <div class="overflow-x-auto">
                 <table class="w-full text-sm" id="mainTable">
-                    <thead class="bg-slate-800 text-white text-xs uppercase font-bold sticky top-0 z-20">
+                    <thead class="bg-slate-850 text-white text-xs uppercase font-bold sticky top-0 z-20">
                         <tr>
-                            <th class="px-3 py-4 sticky-col text-slate-900 bg-white border-r border-slate-200 min-w-[70px] shadow-sm">Ап.</th>
+                            <th class="px-2 py-4 no-print w-10 text-center sticky-col-check">
+                                <input type="checkbox" id="selectAllCheckbox" class="custom-checkbox" onchange="toggleSelectAll()">
+                            </th>
+                            <th class="px-3 py-4 sticky-col-apt min-w-[70px] shadow-sm">Ап.</th>
                             <th class="px-3 py-4 min-w-[150px] text-left">Име</th>
                             <th class="px-2 py-4 w-16 text-center">ХОРА</th>
                             <th class="px-2 py-4 w-16 text-center">ГАРАЖ</th>
                             <th class="px-2 py-4 w-20 text-center">ЕЛ. КОЛА <span class="currency-symbol text-[10px] opacity-70"></span></th>
-                            <th class="px-3 py-4 bg-slate-50 text-slate-600 text-right">Сметка</th>
+                            <th class="px-3 py-4 text-right text-white">Сметка</th>
                             <th class="px-3 py-4 text-rose-300 text-right">Стари</th>
                             <th class="px-3 py-4 text-right">ОБЩО</th>
                             <th class="px-3 py-4 min-w-[120px] text-center no-print">Статус</th>
@@ -224,12 +256,17 @@
                     <tbody class="divide-y divide-slate-100 font-medium"></tbody>
                     <tfoot class="bg-slate-100 font-bold text-slate-800 border-t-2 border-slate-200">
                         <tr>
+                            <td class="no-print"></td>
                             <td colspan="7" class="px-4 py-4 text-right text-xs uppercase tracking-wide">ТОТАЛ <span class="currency-symbol"></span>:</td>
                             <td class="px-3 py-4 text-right text-lg text-blue-700 font-black" id="sum-grand">0.00</td>
                             <td colspan="2" class="no-print"></td>
                         </tr>
                     </tfoot>
                 </table>
+            </div>
+            <div id="bulkActionBar" class="bg-blue-50 border-t border-blue-100 p-3 hidden flex justify-between items-center no-print animate-fade-in fixed bottom-0 left-0 right-0 z-50 shadow-2xl lg:static lg:shadow-none">
+                <span class="text-xs font-bold text-blue-800 uppercase pl-2"><span id="selectedCount">0</span> избрани</span>
+                <button onclick="openBulkPayModal()" class="bg-blue-600 text-white px-6 py-2 rounded-lg text-xs font-bold hover:bg-blue-700 transition shadow-lg">Маркирай като Платени</button>
             </div>
         </div>
 
@@ -278,8 +315,8 @@
             </div>
 
             <div class="lg:col-span-1 bg-white rounded-xl p-5 shadow-sm border border-slate-200 print-only">
-                <h3 class="font-bold text-sm mb-4 text-slate-800 uppercase flex items-center gap-2 border-b border-slate-100 pb-2"><i class="ri-bank-card-fill text-blue-500"></i> Банкова Сметка</h3>
-                <textarea id="persistentInfo" placeholder="IBAN..." class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-sm h-48 resize-none"></textarea>
+                <h3 class="font-bold text-sm mb-4 text-slate-800 uppercase flex items-center gap-2 border-b border-slate-100 pb-2"><i class="ri-wallet-3-fill text-emerald-500"></i> Касова Книга / Бележки</h3>
+                <textarea id="persistentInfo" placeholder="Опишете плащанията тук (напр. 'Платен чистач на 15-ти')..." class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-sm h-48 resize-none"></textarea>
             </div>
         </div>
 
@@ -306,16 +343,45 @@
         </div>
     </main>
 
-    <div id="syncModal" class="hidden fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-fade-in">
-        <div class="bg-white rounded-2xl w-full max-w-lg shadow-2xl p-6 transform transition-all scale-100">
-            <div class="flex justify-between items-center mb-6">
-                <h3 class="font-bold text-lg text-slate-800 flex items-center gap-2"><i class="ri-github-fill text-2xl"></i> GitHub Sync</h3>
-                <button onclick="document.getElementById('syncModal').classList.add('hidden')" class="w-8 h-8 flex items-center justify-center rounded-full hover:bg-slate-100 text-slate-400 text-xl transition">&times;</button>
+    <div id="settingsModal" class="hidden fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-fade-in">
+        <div class="bg-white rounded-2xl w-full max-w-4xl max-h-[90vh] shadow-2xl p-0 flex flex-col overflow-hidden">
+            <div class="p-4 border-b flex justify-between items-center bg-slate-50">
+                <h3 class="font-bold text-lg text-slate-800 flex items-center gap-2"><i class="ri-settings-4-fill"></i> Настройки</h3>
+                <button onclick="document.getElementById('settingsModal').classList.add('hidden')" class="text-2xl text-slate-400">&times;</button>
             </div>
-            <div class="space-y-4">
-                <div><label class="block text-xs font-bold text-slate-500 mb-1 uppercase">Personal Access Token</label><input id="gh-token" type="password" class="w-full bg-slate-50 p-3 rounded-lg text-sm border border-slate-200 outline-none" placeholder="ghp_..."></div>
-                <div><label class="block text-xs font-bold text-slate-500 mb-1 uppercase">Gist ID</label><input id="gh-gist" type="text" class="w-full bg-slate-50 p-3 rounded-lg text-sm border border-slate-200 outline-none" placeholder="e.g. 8f6d..."></div>
-                <button onclick="saveGHCreds()" class="w-full bg-slate-800 hover:bg-slate-700 text-white py-3 rounded-xl font-bold transition shadow-lg mt-2">Запази Настройките</button>
+            <div class="p-6 overflow-y-auto space-y-6">
+                <div class="bg-slate-50 p-4 rounded-xl border border-slate-200">
+                    <h4 class="font-bold text-xs uppercase text-slate-500 mb-2">GitHub Sync</h4>
+                    <div class="grid grid-cols-2 gap-4">
+                        <input id="gh-token" type="password" class="w-full bg-white p-2 rounded text-sm border" placeholder="Token">
+                        <input id="gh-gist" type="text" class="w-full bg-white p-2 rounded text-sm border" placeholder="Gist ID">
+                    </div>
+                    <button onclick="saveGHCreds()" class="mt-2 text-xs bg-slate-800 text-white px-3 py-1 rounded">Save Keys</button>
+                </div>
+                <div>
+                    <h4 class="font-bold text-xs uppercase text-slate-500 mb-2">Редакция на Апартаменти</h4>
+                    <div class="overflow-x-auto border rounded-xl">
+                        <table class="w-full text-xs text-left">
+                            <thead class="bg-slate-100 uppercase font-bold text-slate-500"><tr><th class="p-2">Ап.</th><th class="p-2">Име</th><th class="p-2">Хора</th><th class="p-2">Гараж</th><th class="p-2">% Ид.Ч.</th></tr></thead>
+                            <tbody id="settingsResidentsTable" class="divide-y"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div class="p-4 border-t bg-slate-50 text-right">
+                <button onclick="saveSettingsAndReload()" class="bg-emerald-600 text-white px-6 py-2 rounded-lg font-bold">Запази Промените</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="bulkPayModal" class="hidden fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
+        <div class="bg-white rounded-2xl w-full max-w-md shadow-2xl p-6">
+            <h3 class="font-bold text-lg mb-2">Масово Плащане</h3>
+            <p class="text-sm text-slate-500 mb-4">Ще маркирате <span id="bulkCountDisplay" class="font-bold text-slate-900">0</span> сметки като ПЛАТЕНИ.</p>
+            <input type="text" id="bulkPayComment" class="w-full border p-2 rounded mb-4" placeholder="Бележка (напр. 'Банков превод')...">
+            <div class="flex gap-2">
+                <button onclick="document.getElementById('bulkPayModal').classList.add('hidden')" class="flex-1 py-2 rounded border font-bold">Отказ</button>
+                <button onclick="executeBulkPay()" class="flex-1 py-2 rounded bg-blue-600 text-white font-bold">Потвърди</button>
             </div>
         </div>
     </div>
@@ -334,7 +400,8 @@
     </div>
 
     <script>
-        const fixedApartmentData = [
+        // Default Data
+        const defaultApartments = [
             { name: "1.1", names: "Стефан Дечков", parts: 5.406, people: 2, garage: 1 },
             { name: "1.2", names: "Ваня и Иван", parts: 5.248, people: 2, garage: 1 },
             { name: "1.3", names: "", parts: 4.720, people: 0, garage: 1 },
@@ -353,30 +420,62 @@
             { name: "5.16", names: "Ивайло", parts: 2.660, people: 1, garage: 0 }
         ];
 
+        // App State
+        let appConfig = { apartments: JSON.parse(JSON.stringify(defaultApartments)) };
         let expenses = [];
+        let billStatus = {}; // Stores payment status of monthly bills
         let currentYear = new Date().getFullYear();
         let currentMonth = new Date().getMonth() + 1;
         let currentCurrency = 'BGN'; 
         const EUR_RATE = 1.95583;
         const GH_KEY = 'Condo_GH_Creds';
+        const CONFIG_KEY = 'Condo_Config_V1';
         const currencyInputs = ['c_tok_vhod', 'c_tok_lift', 'c_tok_abonatna', 'c_lift_month', 'c_lift_conn', 'c_lift_tech', 'c_clean_vhod', 'c_tok_garaj', 'c_clean_garaj', 'c_mowing', 'c_septic', 'c_clean_complex', 'c_repair', 'bal_repair_start', 'bal_mowing_start', 'bal_septic_start', 'bal_complex_start', 'newExpCost'];
+        
+        let selectedApts = new Set();
 
         window.onload = function() {
+            const savedConfig = localStorage.getItem(CONFIG_KEY);
+            if(savedConfig) appConfig = JSON.parse(savedConfig);
+
             updateHiddenInput(); renderDatePicker();
             const c = JSON.parse(localStorage.getItem(GH_KEY) || '{}');
             document.getElementById('gh-token').value = c.token || ''; document.getElementById('gh-gist').value = c.gist || '';
             loadData(); updateMonthlyHints();
         };
 
-        // --- NEW MONTH FUNCTION (FIXED) ---
+        // --- CORE FUNCTIONS ---
+        function toggleBillStatus(id) {
+            billStatus[id] = !billStatus[id];
+            renderBillStatus();
+            saveData(true);
+        }
+
+        function renderBillStatus() {
+            const billIds = [
+                'c_tok_vhod', 'c_tok_lift', 'c_tok_abonatna', 'c_lift_month', 'c_clean_vhod',
+                'c_lift_conn', 'c_lift_tech', 'c_tok_garaj', 'c_clean_garaj',
+                'c_mowing', 'c_septic', 'c_clean_complex'
+            ];
+            
+            billIds.forEach(id => {
+                const btn = document.getElementById('btn_paid_' + id);
+                if (btn) {
+                    if (billStatus[id]) {
+                        btn.className = "bill-btn bill-btn-paid w-6 h-6 flex items-center justify-center rounded-md";
+                        btn.innerHTML = '<i class="ri-check-double-line"></i>';
+                    } else {
+                        btn.className = "bill-btn bill-btn-unpaid w-6 h-6 flex items-center justify-center rounded-md";
+                        btn.innerHTML = '<i class="ri-check-line"></i>';
+                    }
+                }
+            });
+        }
+
         function startNewMonth() {
             if (!confirm('Искате ли да отворите НОВ МЕСЕЦ?\n\n1. Неплатените суми ще станат "Стари задължения".\n2. Крайните наличности на фондовете ще станат начални.\n3. Сметките за ток и разходите ще се нулират.')) return;
-
-            // 1. Force BGN to ensure accurate carry-over
             if (currentCurrency === 'EUR') toggleCurrency();
             calculate(); 
-
-            // 2. Prepare next month's rows
             const nextRows = [];
             document.querySelectorAll('#mainTable tbody tr').forEach(row => {
                 const aptName = row.querySelector('.apt-fixed').value;
@@ -386,44 +485,26 @@
                 const comment = row.querySelector('.inp-comment').value;
                 const totalDue = parseFloat(row.querySelector('.res-grand-total').innerText) || 0;
                 const isPaid = row.querySelector('.status-select').value === 'paid';
-                
-                // If NOT paid, total due becomes Old Debt. If paid, debt is cleared.
                 const newOldDebt = isPaid ? 0 : totalDue;
-
-                nextRows.push({
-                    name: aptName, names: names, people: people, garageCells: garage,
-                    evCost: 0, oldDebt: newOldDebt, status: 'unpaid', comment: comment,
-                    repairPaid: 0, repairStatus: 'unpaid', repairNote: ''
-                });
+                nextRows.push({ name: aptName, names: names, people: people, garageCells: garage, evCost: 0, oldDebt: newOldDebt, status: 'unpaid', comment: comment, repairPaid: 0, repairStatus: 'unpaid', repairNote: '' });
             });
-
-            // 3. Prepare inputs (Carry over rates, Set new fund starts from old ends)
             const nextInputs = {};
-            currencyInputs.forEach(id => {
-                 if(document.getElementById(id)) nextInputs[id] = val(id);
-            });
+            currencyInputs.forEach(id => { if(document.getElementById(id)) nextInputs[id] = val(id); });
             nextInputs['bal_repair_start'] = parseFloat(document.getElementById('bal_repair_end').innerText) || 0;
             nextInputs['bal_mowing_start'] = parseFloat(document.getElementById('bal_mowing_end').innerText) || 0;
             nextInputs['bal_septic_start'] = parseFloat(document.getElementById('bal_septic_end').innerText) || 0;
             nextInputs['bal_complex_start'] = parseFloat(document.getElementById('bal_complex_end').innerText) || 0;
-
-            // 4. Move Time Forward
             if (currentMonth === 12) { currentMonth = 1; currentYear++; } else { currentMonth++; }
-            
-            // 5. Save New Data
             const newDateKey = `${currentYear}-${String(currentMonth).padStart(2, '0')}`;
             document.getElementById('reportDate').value = newDateKey;
             
-            const newData = { rows: nextRows, inputs: nextInputs, expenses: [], info: document.getElementById('persistentInfo').value };
+            // New Month -> Reset bill statuses
+            const newData = { rows: nextRows, inputs: nextInputs, expenses: [], info: document.getElementById('persistentInfo').value, billStatus: {} };
             localStorage.setItem(`condo_${newDateKey}`, JSON.stringify(newData));
-
-            // 6. Refresh
-            renderDatePicker();
-            loadData();
+            renderDatePicker(); loadData();
             alert(`Успешно стартиран месец ${newDateKey}!`);
         }
 
-        // --- EXCEL EXPORT (INCLUDES REPAIRS) ---
         function exportToCSV() {
             calculate(); const dateStr = document.getElementById('reportDate').value; const factor = currentCurrency === 'EUR' ? (1/EUR_RATE) : 1; const sym = currentCurrency === 'EUR' ? '€' : 'лв.'; let csv = `\uFEFFОТЧЕТ ЗА МЕСЕЦ: ${dateStr},,,,,,,,\nВАЛУТА: ${currentCurrency},,,,,,,,\n\n--- СЪСТОЯНИЕ НА ФОНДОВЕТЕ ---,,,,,,,,\nИме,Начало,Събрано,Похарчено,Край,,,,\n`;
             ['repair', 'mowing', 'septic', 'complex'].forEach(type => { const name = type === 'repair' ? 'Ремонт' : type === 'mowing' ? 'Косене' : type === 'septic' ? 'Яма' : 'Комплекс'; const start = document.getElementById(`bal_${type}_start`).value; const col = document.getElementById(`disp_${type}_col`).innerText; const spent = document.getElementById(`disp_${type}_spent`).innerText; const end = document.getElementById(`bal_${type}_end`).innerText; csv += `${name},${start},${col},${spent},${end},,,,\n`; });
@@ -453,7 +534,7 @@
             document.getElementById('reportText').value = txt; document.getElementById('reportModal').classList.remove('hidden');
         }
 
-        function saveGHCreds() { localStorage.setItem(GH_KEY, JSON.stringify({token: document.getElementById('gh-token').value, gist: document.getElementById('gh-gist').value})); alert('Ключовете са запазени!'); document.getElementById('syncModal').classList.add('hidden'); }
+        function saveGHCreds() { localStorage.setItem(GH_KEY, JSON.stringify({token: document.getElementById('gh-token').value, gist: document.getElementById('gh-gist').value})); alert('Ключовете са запазени!'); document.getElementById('settingsModal').classList.add('hidden'); }
         async function pullFromGitHub() { const c = JSON.parse(localStorage.getItem(GH_KEY) || '{}'); if(!c.token || !c.gist) return alert("Липсват ключове!"); const btn = document.getElementById('btn-pull'); btn.innerHTML = `<div class="loader"></div>`; try { const req = await fetch(`https://api.github.com/gists/${c.gist}`, { headers: { 'Authorization': `token ${c.token}` } }); if(!req.ok) throw new Error("GitHub Error"); const json = await req.json(); const content = json.files['block7d.json'].content; localStorage.setItem(`condo_${document.getElementById('reportDate').value}`, JSON.stringify(JSON.parse(content))); loadData(); alert('Изтеглено!'); } catch(e) { alert("Грешка: " + e.message); } finally { btn.innerHTML = `<i class="ri-download-cloud-2-fill"></i> ИЗТЕГЛИ`; } }
         async function pushToGitHub() { const c = JSON.parse(localStorage.getItem(GH_KEY) || '{}'); if(!c.token || !c.gist) return alert("Липсват ключове!"); saveData(true); const btn = document.getElementById('btn-push'); btn.innerHTML = `<div class="loader"></div>`; try { const dataToPush = localStorage.getItem(`condo_${document.getElementById('reportDate').value}`); const req = await fetch(`https://api.github.com/gists/${c.gist}`, { method: 'PATCH', headers: { 'Authorization': `token ${c.token}`, 'Content-Type': 'application/json' }, body: JSON.stringify({ files: { "block7d.json": { content: dataToPush } } }) }); if(!req.ok) throw new Error("GitHub Error"); alert('Качено!'); } catch(e) { alert("Грешка: " + e.message); } finally { btn.innerHTML = `<i class="ri-upload-cloud-2-fill"></i> КАЧИ`; } }
 
@@ -471,14 +552,23 @@
         
         function renderTable(savedData) {
             const tbody = document.querySelector('#mainTable tbody'); tbody.innerHTML = ''; const factor = currentCurrency==='EUR'?(1/EUR_RATE):1;
-            fixedApartmentData.forEach((fixedApt) => {
+            
+            appConfig.apartments.forEach((fixedApt) => {
                 let savedApt = savedData ? savedData.find(s => s.name === fixedApt.name) : null; const ownerNames = savedApt ? (savedApt.names || fixedApt.names) : fixedApt.names; const people = savedApt ? savedApt.people : fixedApt.people; const garageCells = savedApt ? savedApt.garageCells : fixedApt.garage; const oldDebt = (savedApt ? savedApt.oldDebt : 0) * factor; const evCost = (savedApt ? (savedApt.evCost || 0) : 0) * factor; const status = savedApt ? savedApt.status : 'unpaid'; const comment = savedApt ? savedApt.comment : '';
                 const tr = document.createElement('tr'); tr.className = status === 'paid' ? "bg-emerald-50/50" : "";
-                tr.innerHTML = `<td class="px-3 py-3 sticky-col bg-white border-r border-slate-200"><button onclick="generateReport('${fixedApt.name}')" class="font-bold text-blue-600 hover:bg-blue-50 px-3 py-1.5 rounded-lg text-xs w-full transition no-print border border-transparent hover:border-blue-100">${fixedApt.name}</button><span class="hidden print-only font-bold">${fixedApt.name}</span><input type="hidden" class="apt-fixed" value="${fixedApt.name}"></td><td class="px-3 py-3"><input type="text" class="inp-names w-full bg-transparent text-xs text-slate-700 font-medium input-cell" value="${ownerNames}"></td><td class="px-2 py-3"><input type="number" class="apt-fixed-input inp-people w-10 bg-slate-50 border border-slate-100 rounded text-center text-xs p-1 mx-auto block font-bold" value="${people}"></td><td class="px-2 py-3"><input type="number" class="apt-fixed-input inp-garage w-10 bg-slate-50 border border-slate-100 rounded text-center text-xs p-1 mx-auto block font-bold" value="${garageCells}"></td><td class="px-2 py-3"><input type="number" class="inp-ev w-16 bg-blue-50 text-blue-700 font-medium rounded text-center text-xs p-1 border border-blue-100 font-bold mx-auto block input-cell" value="${evCost.toFixed(2)}"></td><input type="hidden" class="inp-parts" value="${fixedApt.parts}"><td class="px-3 py-3 text-right text-xs font-medium text-slate-500 res-current">0</td><td class="px-3 py-3"><input type="number" class="inp-old-debt w-20 text-right text-rose-500 font-bold bg-transparent text-xs input-cell" value="${oldDebt.toFixed(2)}"></td><td class="px-3 py-3 text-right font-black text-slate-800 text-sm res-grand-total">0</td><td class="px-3 py-3 text-center no-print"><select class="status-select text-xs w-full text-center rounded-lg px-2 py-1.5 cursor-pointer transition border-0 ring-1 ring-slate-200 shadow-sm font-bold ${status==='paid'?'badge-paid':'badge-unpaid'}" onchange="changeStatus(this)"><option value="unpaid">НЕПЛАТЕНО</option><option value="paid" ${status==='paid'?'selected':''}>ПЛАТЕНО</option></select></td><td class="px-3 py-3 no-print"><input type="text" class="inp-comment w-full bg-transparent text-xs text-slate-400 italic input-cell" value="${comment}" placeholder="..."></td>`;
+                
+                if(selectedApts.has(fixedApt.name)) tr.classList.add('row-selected');
+
+                tr.innerHTML = `
+                    <td class="px-2 py-3 text-center bg-white border-r border-slate-100 no-print sticky-col-check">
+                        <input type="checkbox" class="custom-checkbox row-checkbox" value="${fixedApt.name}" ${selectedApts.has(fixedApt.name)?'checked':''} onchange="toggleRow('${fixedApt.name}')">
+                    </td>
+                    <td class="px-3 py-3 sticky-col-apt bg-white border-r border-slate-200"><button onclick="generateReport('${fixedApt.name}')" class="font-bold text-blue-600 hover:bg-blue-50 px-3 py-1.5 rounded-lg text-xs w-full transition no-print border border-transparent hover:border-blue-100">${fixedApt.name}</button><span class="hidden print-only font-bold">${fixedApt.name}</span><input type="hidden" class="apt-fixed" value="${fixedApt.name}"></td><td class="px-3 py-3"><input type="text" class="inp-names w-full bg-transparent text-xs text-slate-700 font-medium input-cell" value="${ownerNames}"></td><td class="px-2 py-3"><input type="number" class="apt-fixed-input inp-people w-10 bg-slate-50 border border-slate-100 rounded text-center text-xs p-1 mx-auto block font-bold" value="${people}"></td><td class="px-2 py-3"><input type="number" class="apt-fixed-input inp-garage w-10 bg-slate-50 border border-slate-100 rounded text-center text-xs p-1 mx-auto block font-bold" value="${garageCells}"></td><td class="px-2 py-3"><input type="number" class="inp-ev w-16 bg-blue-50 text-blue-700 font-medium rounded text-center text-xs p-1 border border-blue-100 font-bold mx-auto block input-cell" value="${evCost.toFixed(2)}"></td><input type="hidden" class="inp-parts" value="${fixedApt.parts}"><td class="px-3 py-3 text-right text-xs font-medium text-slate-500 res-current">0</td><td class="px-3 py-3"><input type="number" class="inp-old-debt w-20 text-right text-rose-500 font-bold bg-transparent text-xs input-cell" value="${oldDebt.toFixed(2)}"></td><td class="px-3 py-3 text-right font-black text-slate-800 text-sm res-grand-total">0</td><td class="px-3 py-3 text-center no-print"><select class="status-select text-xs w-full text-center rounded-lg px-2 py-1.5 cursor-pointer transition border-0 ring-1 ring-slate-200 shadow-sm font-bold ${status==='paid'?'badge-paid':'badge-unpaid'}" onchange="changeStatus(this)"><option value="unpaid">НЕПЛАТЕНО</option><option value="paid" ${status==='paid'?'selected':''}>ПЛАТЕНО</option></select></td><td class="px-3 py-3 no-print"><input type="text" class="inp-comment w-full bg-transparent text-xs text-slate-400 italic input-cell" value="${comment}" placeholder="..."></td>`;
                 tbody.appendChild(tr);
             });
             calculate();
         }
+
         function changeStatus(sel) { const row = sel.closest('tr'); if(sel.value === 'paid') { row.classList.add('bg-emerald-50/50'); sel.className = "status-select text-xs w-full text-center rounded-lg px-2 py-1.5 cursor-pointer transition border-0 ring-1 ring-emerald-200 shadow-sm font-bold badge-paid"; } else { row.classList.remove('bg-emerald-50/50'); sel.className = "status-select text-xs w-full text-center rounded-lg px-2 py-1.5 cursor-pointer transition border-0 ring-1 ring-red-200 shadow-sm font-bold badge-unpaid"; } }
         
         function calculate() {
@@ -508,13 +598,79 @@
         function removeExpense(idx) { expenses.splice(idx,1); renderExpenses(); calculate(); refreshRepairsTable(); }
         function renderExpenses() { const factor = currentCurrency==='EUR'?(1/EUR_RATE):1; const tb = document.querySelector('#expensesTable tbody'); tb.innerHTML = ''; expenses.forEach((e,i) => { tb.innerHTML += `<tr class="border-b border-slate-50"><td class="py-2 text-slate-700">${e.title}</td><td class="text-xs text-slate-400">${e.type}</td><td class="text-right font-bold text-slate-800">${(e.cost*factor).toFixed(2)}</td><td class="text-right no-print"><button onclick="removeExpense(${i})" class="text-rose-400">&times;</button></td></tr>`; }); }
         function refreshRepairsTable() { const totalRepairExpensesBGN = expenses.filter(e => e.type === 'repair').reduce((sum, e) => sum + e.cost, 0); const savedString = localStorage.getItem(`condo_${document.getElementById('reportDate').value}`); let savedData = savedString ? JSON.parse(savedString).rows : null; renderRepairsBreakdown(totalRepairExpensesBGN, savedData); }
-        function renderRepairsBreakdown(totalRepairExpensesBGN, savedData) { const factor = currentCurrency==='EUR'?(1/EUR_RATE):1; const tbody = document.querySelector('#repairsBreakdownTable tbody'); tbody.innerHTML = ''; let totalParts = 0; fixedApartmentData.forEach(a => totalParts += a.parts); fixedApartmentData.forEach((apt) => { const shareBGN = (totalRepairExpensesBGN * apt.parts) / totalParts; let paidSoFarBGN = 0; let savedRepairStatus = 'unpaid'; let savedNote = ''; if(savedData) { const savedRow = savedData.find(r => r.name === apt.name); if(savedRow && savedRow.repairPaid) paidSoFarBGN = parseFloat(savedRow.repairPaid); if(savedRow && savedRow.repairStatus) savedRepairStatus = savedRow.repairStatus; if(savedRow && savedRow.repairNote) savedNote = savedRow.repairNote; } const diffBGN = shareBGN - paidSoFarBGN; let colorClass = diffBGN > 0.01 ? 'text-rose-500' : 'text-emerald-500'; let selectClass = "repair-status-select rounded text-xs py-1 px-1 w-full font-bold " + (savedRepairStatus==='paid'?'rep-paid':savedRepairStatus==='partial'?'rep-partial':'rep-unpaid'); tbody.innerHTML += `<tr><td class="px-3 py-3 font-bold text-slate-700">${apt.name}</td><td class="px-3 py-3 text-center text-slate-500">${apt.parts}%</td><td class="px-3 py-3 text-right">${(shareBGN * factor).toFixed(2)}</td><td class="px-3 py-3 text-right"><input type="number" class="inp-repair-paid w-20 text-right bg-slate-50 rounded p-1 text-xs input-cell font-bold" value="${(paidSoFarBGN * factor).toFixed(2)}" onchange="saveData(true); refreshRepairsTable()"></td><td class="px-3 py-3 text-right font-bold ${colorClass}">${(diffBGN * factor).toFixed(2)}</td><td class="px-3 py-3 text-center no-print"><select class="${selectClass}" onchange="updateRepairStatus(this)"><option value="unpaid">НЕПЛАТЕНО</option><option value="partial" ${savedRepairStatus==='partial'?'selected':''}>ЧАСТИЧНО</option><option value="paid" ${savedRepairStatus==='paid'?'selected':''}>ПЛАТЕНО</option></select></td><td class="px-3 py-3 no-print"><input type="text" class="inp-repair-note w-full bg-slate-50 rounded px-2 py-1 text-xs text-slate-600 input-cell" value="${savedNote}" placeholder="..." onchange="saveData(true)"></td></tr>`; }); }
+        function renderRepairsBreakdown(totalRepairExpensesBGN, savedData) { const factor = currentCurrency==='EUR'?(1/EUR_RATE):1; const tbody = document.querySelector('#repairsBreakdownTable tbody'); tbody.innerHTML = ''; let totalParts = 0; appConfig.apartments.forEach(a => totalParts += a.parts); appConfig.apartments.forEach((apt) => { const shareBGN = (totalRepairExpensesBGN * apt.parts) / totalParts; let paidSoFarBGN = 0; let savedRepairStatus = 'unpaid'; let savedNote = ''; if(savedData) { const savedRow = savedData.find(r => r.name === apt.name); if(savedRow && savedRow.repairPaid) paidSoFarBGN = parseFloat(savedRow.repairPaid); if(savedRow && savedRow.repairStatus) savedRepairStatus = savedRow.repairStatus; if(savedRow && savedRow.repairNote) savedNote = savedRow.repairNote; } const diffBGN = shareBGN - paidSoFarBGN; let colorClass = diffBGN > 0.01 ? 'text-rose-500' : 'text-emerald-500'; let selectClass = "repair-status-select rounded text-xs py-1 px-1 w-full font-bold " + (savedRepairStatus==='paid'?'rep-paid':savedRepairStatus==='partial'?'rep-partial':'rep-unpaid'); tbody.innerHTML += `<tr><td class="px-3 py-3 font-bold text-slate-700">${apt.name}</td><td class="px-3 py-3 text-center text-slate-500">${apt.parts}%</td><td class="px-3 py-3 text-right">${(shareBGN * factor).toFixed(2)}</td><td class="px-3 py-3 text-right"><input type="number" class="inp-repair-paid w-20 text-right bg-slate-50 rounded p-1 text-xs input-cell font-bold" value="${(paidSoFarBGN * factor).toFixed(2)}" onchange="saveData(true); refreshRepairsTable()"></td><td class="px-3 py-3 text-right font-bold ${colorClass}">${(diffBGN * factor).toFixed(2)}</td><td class="px-3 py-3 text-center no-print"><select class="${selectClass}" onchange="updateRepairStatus(this)"><option value="unpaid">НЕПЛАТЕНО</option><option value="partial" ${savedRepairStatus==='partial'?'selected':''}>ЧАСТИЧНО</option><option value="paid" ${savedRepairStatus==='paid'?'selected':''}>ПЛАТЕНО</option></select></td><td class="px-3 py-3 no-print"><input type="text" class="inp-repair-note w-full bg-slate-50 rounded px-2 py-1 text-xs text-slate-600 input-cell" value="${savedNote}" placeholder="..." onchange="saveData(true)"></td></tr>`; }); }
         function updateRepairStatus(sel) { saveData(true); refreshRepairsTable(); }
-        function saveData(silent = false) { const rows = []; document.querySelectorAll('#mainTable tbody tr').forEach(r => { const aptName = r.querySelector('.apt-fixed').value; let repairPaidVal = 0; let repairStatusVal = 'unpaid'; let repairNoteVal = ''; const breakdownRows = document.querySelectorAll('#repairsBreakdownTable tbody tr'); for(let br of breakdownRows) { if(br.cells[0].innerText.includes(aptName)) { repairPaidVal = valEl(br.querySelector('.inp-repair-paid')); repairStatusVal = br.querySelector('select').value; repairNoteVal = br.querySelector('.inp-repair-note').value; break; } } rows.push({ name: aptName, names: r.querySelector('.inp-names').value, people: r.querySelector('.inp-people').value, garageCells: r.querySelector('.inp-garage').value, evCost: valEl(r.querySelector('.inp-ev')), oldDebt: valEl(r.querySelector('.inp-old-debt')), status: r.querySelector('.status-select').value, comment: r.querySelector('.inp-comment').value, repairPaid: repairPaidVal, repairStatus: repairStatusVal, repairNote: repairNoteVal }); }); const inputs = {}; currencyInputs.forEach(id => { if(document.getElementById(id)) inputs[id] = val(id); }); const data = { rows, inputs, expenses, info: document.getElementById('persistentInfo').value }; localStorage.setItem(`condo_${document.getElementById('reportDate').value}`, JSON.stringify(data)); if(!silent) alert('Запазено локално!'); }
-        function loadData() { currentCurrency = 'BGN'; document.getElementById('currencyLabel').innerText = 'BGN'; document.getElementById('inputHint').innerText = 'Входни данни (BGN)'; document.getElementById('bodyRoot').classList.remove('mode-eur'); document.getElementById('bodyRoot').classList.add('mode-bgn'); const key = `condo_${document.getElementById('reportDate').value}`; const stored = localStorage.getItem(key); if(stored) { const data = JSON.parse(stored); expenses = data.expenses || []; renderTable(data.rows); if(data.inputs) for(let k in data.inputs) if(document.getElementById(k)) document.getElementById(k).value = data.inputs[k]; if(data.info) document.getElementById('persistentInfo').value = data.info; renderExpenses(); const totalRepairExpenses = expenses.filter(e => e.type === 'repair').reduce((sum, e) => sum + e.cost, 0); renderRepairsBreakdown(totalRepairExpenses, data.rows); } else { expenses = []; renderTable(null); renderExpenses(); renderRepairsBreakdown(0, null); } calculate(); }
+        function saveData(silent = false) { const rows = []; document.querySelectorAll('#mainTable tbody tr').forEach(r => { const aptName = r.querySelector('.apt-fixed').value; let repairPaidVal = 0; let repairStatusVal = 'unpaid'; let repairNoteVal = ''; const breakdownRows = document.querySelectorAll('#repairsBreakdownTable tbody tr'); for(let br of breakdownRows) { if(br.cells[0].innerText.includes(aptName)) { repairPaidVal = valEl(br.querySelector('.inp-repair-paid')); repairStatusVal = br.querySelector('select').value; repairNoteVal = br.querySelector('.inp-repair-note').value; break; } } rows.push({ name: aptName, names: r.querySelector('.inp-names').value, people: r.querySelector('.inp-people').value, garageCells: r.querySelector('.inp-garage').value, evCost: valEl(r.querySelector('.inp-ev')), oldDebt: valEl(r.querySelector('.inp-old-debt')), status: r.querySelector('.status-select').value, comment: r.querySelector('.inp-comment').value, repairPaid: repairPaidVal, repairStatus: repairStatusVal, repairNote: repairNoteVal }); }); const inputs = {}; currencyInputs.forEach(id => { if(document.getElementById(id)) inputs[id] = val(id); }); const data = { rows, inputs, expenses, info: document.getElementById('persistentInfo').value, billStatus: billStatus }; localStorage.setItem(`condo_${document.getElementById('reportDate').value}`, JSON.stringify(data)); if(!silent) alert('Запазено локално!'); }
+        function loadData() { currentCurrency = 'BGN'; document.getElementById('currencyLabel').innerText = 'BGN'; document.getElementById('inputHint').innerText = 'Входни данни (BGN)'; document.getElementById('bodyRoot').classList.remove('mode-eur'); document.getElementById('bodyRoot').classList.add('mode-bgn'); const key = `condo_${document.getElementById('reportDate').value}`; const stored = localStorage.getItem(key); if(stored) { const data = JSON.parse(stored); expenses = data.expenses || []; billStatus = data.billStatus || {}; renderTable(data.rows); if(data.inputs) for(let k in data.inputs) if(document.getElementById(k)) document.getElementById(k).value = data.inputs[k]; if(data.info) document.getElementById('persistentInfo').value = data.info; renderExpenses(); const totalRepairExpenses = expenses.filter(e => e.type === 'repair').reduce((sum, e) => sum + e.cost, 0); renderRepairsBreakdown(totalRepairExpenses, data.rows); renderBillStatus(); } else { expenses = []; billStatus = {}; renderTable(null); renderExpenses(); renderRepairsBreakdown(0, null); renderBillStatus(); } calculate(); }
         function generateViberMessage() { calculate(); const dateStr = document.getElementById('reportDate').value; let text = `🏢 *Блок 7Д | Отчет ${dateStr}*\n━━━━━━━━━━━━\n`; let totalUnpaid = 0; document.querySelectorAll('#mainTable tbody tr').forEach(row => { const apt = row.querySelector('.apt-fixed').value; const name = row.querySelector('.inp-names').value.split(' ')[0]; const total = row.querySelector('.res-grand-total').innerText; const isPaid = row.querySelector('.status-select').value === 'paid'; if(!isPaid) totalUnpaid += parseFloat(total); text += `${isPaid ? '✅' : '🔴'} Ап.${apt} (${name}): ${total} ${currentCurrency === 'EUR'?'€':'лв.'}\n`; }); text += `━━━━━━━━━━━━\n💰 За събиране: ${totalUnpaid.toFixed(2)} ${currentCurrency === 'EUR'?'€':'лв.'}\n`; document.getElementById('reportText').value = text; document.getElementById('reportModal').classList.remove('hidden'); }
         function copyReportText() { const el = document.getElementById('reportText'); el.select(); navigator.clipboard.writeText(el.value).then(() => alert('Копирано!')); }
         function generateReport(aptName) { let wasEur = currentCurrency === 'EUR'; if(wasEur) toggleCurrency(); calculate(); const row = Array.from(document.querySelectorAll('#mainTable tbody tr')).find(r => r.querySelector('.apt-fixed').value === aptName); if(!row) { if(wasEur) toggleCurrency(); return; } const name = row.querySelector('.inp-names').value; const people = parseFloat(row.querySelector('.inp-people').value)||0; const garage = parseFloat(row.querySelector('.inp-garage').value)||0; const parts = parseFloat(row.querySelector('.inp-parts').value)||0; const evCost = parseFloat(row.querySelector('.inp-ev').value)||0; const isPaid = row.querySelector('.status-select').value === 'paid'; const dateStr = document.getElementById('reportDate').value; let totalPeople = 0, totalGarageCells = 0, totalParts = 0; document.querySelectorAll('#mainTable tbody tr').forEach(r => { totalPeople += parseFloat(r.querySelector('.inp-people').value)||0; totalGarageCells += parseFloat(r.querySelector('.inp-garage').value)||0; totalParts += parseFloat(r.querySelector('.inp-parts').value)||0; }); const liftConnMonthly = val('c_lift_conn')/12; const liftTechMonthly = val('c_lift_tech')/12; const costCommon = val('c_tok_vhod') + val('c_tok_lift') + val('c_tok_abonatna') + val('c_lift_month') + liftConnMonthly + liftTechMonthly + val('c_clean_vhod'); const costGarageTotal = val('c_tok_garaj') + val('c_clean_garaj'); const costMaintenance = val('c_clean_complex') + val('c_mowing') + val('c_septic'); const costRepairs = val('c_repair'); const priceGarage = totalGarageCells>0?costGarageTotal/totalGarageCells:0; const priceCommon = totalPeople>0?costCommon/totalPeople:0; const priceMaint = totalPeople>0?costMaintenance/totalPeople:0; const priceRepair = totalParts>0?costRepairs/totalParts:0; const aptCommon = people * priceCommon; const aptMaint = people * priceMaint; const aptRepair = parts * priceRepair; const aptGarage = garage * priceGarage; const debt = parseFloat(row.querySelector('.inp-old-debt').value)||0; const aptTotalBGN = aptCommon + aptMaint + aptRepair + aptGarage + evCost + debt; if(wasEur) toggleCurrency(); const fmt = (val) => `${val.toFixed(2)} лв. / ${(val/EUR_RATE).toFixed(2)} €`; let txt = `🏢 КАСОВА БЕЛЕЖКА - БЛОК 7Д\n🗓️ Период: ${dateStr}\n👤 Ап. ${aptName} (${name})\n----------------------------------------\n`; const pLabel = people === 1 ? 'живущ' : 'живущи'; if(aptName !== '1.3' && people > 0) { txt += `⚡ Общи (Ток/Ас/Чист): ${people} ${pLabel} x ${priceCommon.toFixed(2)} лв. = ${fmt(aptCommon)}\n`; txt += `🌱 Поддръжка (Косене/Яма): ${people} ${pLabel} x ${priceMaint.toFixed(2)} лв. = ${fmt(aptMaint)}\n`; txt += `🛠️ Фонд Ремонт (${parts}%): ${fmt(aptRepair)}\n`; } else if(aptName === '1.3') txt += `ℹ️ Апартамент 1.3 е освободен от такси.\n`; if(garage > 0) txt += `🚗 Гараж (Ток/Поч): ${garage} бр. x ${priceGarage.toFixed(2)} лв. = ${fmt(aptGarage)}\n`; if(evCost > 0) txt += `🔌 EV: ${fmt(evCost)}\n`; if(debt > 0) txt += `⚠️ Стари задължения: ${fmt(debt)}\n`; txt += `----------------------------------------\n💰 ОБЩО ЗА ПЛАЩАНЕ: ${fmt(aptTotalBGN)}\n📝 СТАТУС: ${isPaid ? '✅ ПЛАТЕНО' : '❌ НЕПЛАТЕНО'}`; document.getElementById('reportText').value = txt; document.getElementById('reportModal').classList.remove('hidden'); }
+
+        // --- NEW FEATURES: BULK & SETTINGS ---
+        function toggleSelectAll() { const all = document.getElementById('selectAllCheckbox').checked; selectedApts.clear(); if(all) appConfig.apartments.forEach(a => selectedApts.add(a.name)); updateBulkUI(); }
+        function toggleRow(name) { 
+            const cb = document.querySelector(`.row-checkbox[value="${name}"]`);
+            if(selectedApts.has(name)) {
+                selectedApts.delete(name);
+                cb.closest('tr').classList.remove('row-selected');
+            } else {
+                selectedApts.add(name);
+                cb.closest('tr').classList.add('row-selected');
+            }
+            updateBulkUI(); 
+        }
+        function updateBulkUI() { 
+            const b = document.getElementById('bulkActionBar'); 
+            document.getElementById('selectedCount').innerText = selectedApts.size; 
+            
+            // Sync all visual states
+            document.querySelectorAll('.row-checkbox').forEach(c => {
+                c.checked = selectedApts.has(c.value);
+                const tr = c.closest('tr');
+                if(c.checked) tr.classList.add('row-selected');
+                else tr.classList.remove('row-selected');
+            });
+
+            if(selectedApts.size > 0) { 
+                b.classList.remove('hidden'); 
+            } else { 
+                b.classList.add('hidden'); 
+                document.getElementById('selectAllCheckbox').checked = false; 
+            } 
+        }
+        function openBulkPayModal() { document.getElementById('bulkCountDisplay').innerText = selectedApts.size; document.getElementById('bulkPayComment').value = ""; document.getElementById('bulkPayModal').classList.remove('hidden'); }
+        function executeBulkPay() {
+            const comment = document.getElementById('bulkPayComment').value;
+            document.querySelectorAll('#mainTable tbody tr').forEach(row => {
+                const name = row.querySelector('.apt-fixed').value;
+                if(selectedApts.has(name)) {
+                    const select = row.querySelector('.status-select');
+                    select.value = 'paid';
+                    changeStatus(select);
+                    if(comment) row.querySelector('.inp-comment').value = comment;
+                }
+            });
+            saveData(true);
+            selectedApts.clear(); document.getElementById('bulkPayModal').classList.add('hidden'); updateBulkUI();
+            alert('Успешно маркирани!');
+        }
+
+        // Settings Modal & Editing
+        function openSettings() {
+            const tb = document.getElementById('settingsResidentsTable'); tb.innerHTML = '';
+            appConfig.apartments.forEach((a, i) => {
+                tb.innerHTML += `<tr><td class="p-2 font-bold">${a.name}</td><td class="p-2"><input type="text" value="${a.names}" class="border rounded w-full px-1 text-xs" onchange="editApt(${i},'names',this.value)"></td><td class="p-2"><input type="number" value="${a.people}" class="border rounded w-10 text-center text-xs" onchange="editApt(${i},'people',this.value)"></td><td class="p-2"><input type="number" value="${a.garage}" class="border rounded w-10 text-center text-xs" onchange="editApt(${i},'garage',this.value)"></td><td class="p-2"><input type="number" value="${a.parts}" class="border rounded w-12 text-center text-xs" onchange="editApt(${i},'parts',this.value)"></td></tr>`;
+            });
+            document.getElementById('settingsModal').classList.remove('hidden');
+        }
+        function editApt(i, f, v) { if(f === 'names') appConfig.apartments[i].names = v; else appConfig.apartments[i][f] = parseFloat(v) || 0; }
+        function saveSettingsAndReload() {
+            localStorage.setItem(CONFIG_KEY, JSON.stringify(appConfig));
+            document.getElementById('settingsModal').classList.add('hidden');
+            loadData(); // Reload table with new config
+            alert("Конфигурацията е обновена!");
+        }
     </script>
 </body>
 </html>
+
