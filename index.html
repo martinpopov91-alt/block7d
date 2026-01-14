@@ -60,7 +60,7 @@
         /* Table Styles */
         .data-table { width: 100%; border-collapse: separate; border-spacing: 0; }
         .data-table th { background: #f9fafb; color: #4b5563; font-weight: 600; text-transform: uppercase; font-size: 11px; letter-spacing: 0.05em; padding: 10px; border-bottom: 1px solid #e5e7eb; text-align: left; }
-        .data-table td { padding: 10px; border-bottom: 1px solid #f3f4f6; font-size: 13px; vertical-align: middle; }
+        .data-table td { padding: 8px; border-bottom: 1px solid #f3f4f6; font-size: 13px; vertical-align: middle; }
         .data-table tr:hover td { background-color: #f9fafb; }
         .data-table tr:last-child td { border-bottom: none; }
 
@@ -70,21 +70,19 @@
         tr:hover .sticky-check, tr:hover .sticky-apt { background-color: #f9fafb; }
         thead .sticky-check, thead .sticky-apt { background: #f9fafb; z-index: 20; }
 
-        /* Badges */
-        .status-badge { display: inline-flex; align-items: center; px: 2.5; py: 0.5; border-radius: 9999px; font-size: 10px; font-weight: 700; text-transform: uppercase; }
-        .status-paid { background: #ecfdf5; color: #047857; border: 1px solid #a7f3d0; }
-        .status-unpaid { background: #fef2f2; color: #b91c1c; border: 1px solid #fecaca; }
-
         /* Buttons */
-        .btn-primary { background-color: #0f766e; color: white; border-radius: 6px; padding: 8px 16px; font-size: 13px; font-weight: 600; transition: bg 0.2s; box-shadow: 0 1px 2px rgba(0,0,0,0.1); }
+        .btn-primary { background-color: #0f766e; color: white; border-radius: 6px; padding: 8px 16px; font-size: 13px; font-weight: 600; transition: bg 0.2s; box-shadow: 0 1px 2px rgba(0,0,0,0.1); display: flex; align-items: center; justify-content: center; gap: 5px;}
         .btn-primary:hover { background-color: #115e59; }
-        .btn-secondary { background-color: white; color: #374151; border: 1px solid #d1d5db; border-radius: 6px; padding: 8px 16px; font-size: 13px; font-weight: 600; transition: bg 0.2s; }
+        .btn-secondary { background-color: white; color: #374151; border: 1px solid #d1d5db; border-radius: 6px; padding: 8px 16px; font-size: 13px; font-weight: 600; transition: bg 0.2s; display: flex; align-items: center; justify-content: center; gap: 5px;}
         .btn-secondary:hover { background-color: #f9fafb; border-color: #9ca3af; }
         
         .btn-icon { width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; border-radius: 6px; transition: all 0.2s; }
-        .btn-icon-unpaid { color: #9ca3af; border: 1px solid #e5e7eb; }
+        .btn-icon-unpaid { color: #9ca3af; border: 1px solid #e5e7eb; background: #fff; }
         .btn-icon-unpaid:hover { color: #4b5563; border-color: #9ca3af; }
         .btn-icon-paid { background: #ecfdf5; color: #059669; border: 1px solid #6ee7b7; }
+
+        /* Row selected */
+        .row-selected td { background-color: #f0fdfa !important; }
 
         /* Animations */
         @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
@@ -93,7 +91,7 @@
         /* Mobile Bottom Nav */
         .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: white; border-top: 1px solid #e5e7eb; padding: 8px; display: flex; justify-content: space-around; z-index: 50; box-shadow: 0 -4px 6px -1px rgba(0,0,0,0.05); }
         .nav-item { display: flex; flex-direction: column; align-items: center; gap: 2px; color: #6b7280; font-size: 10px; font-weight: 600; padding: 4px 12px; border-radius: 8px; }
-        .nav-item.active { color: #0f766e; background: #f0fdfa; }
+        .nav-item:active { color: #0f766e; background: #f0fdfa; }
         .nav-item i { font-size: 20px; margin-bottom: 2px; }
 
         @media print {
@@ -105,6 +103,7 @@
             .grid-cols-1, .grid-cols-2, .grid-cols-3, .grid-cols-4, .grid-cols-5 { display: block; }
             .fund-print-container { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; margin-bottom: 20px; }
             .expenses-print-container { display: flex; gap: 20px; }
+            #mainTable th, #mainTable td { padding: 4px; border: 1px solid #eee; }
         }
     </style>
 </head>
@@ -112,7 +111,7 @@
 
     <aside class="sidebar-desktop no-print">
         <div class="p-6 border-b border-slate-700 flex items-center gap-3">
-            <div class="w-8 h-8 bg-brand-500 rounded flex items-center justify-center text-white font-bold text-lg">7</div>
+            <div class="w-8 h-8 bg-brand-500 rounded flex items-center justify-center text-white font-bold text-lg"><i class="ri-building-2-fill"></i></div>
             <div>
                 <h1 class="font-bold text-lg leading-tight">Блок 7Д</h1>
                 <p class="text-xs text-slate-400">Management Pro</p>
@@ -120,7 +119,7 @@
         </div>
         
         <nav class="flex-1 p-4 space-y-1">
-            <a href="#" class="flex items-center gap-3 px-4 py-3 bg-slate-800 text-white rounded-lg font-medium"><i class="ri-dashboard-3-line"></i> Табло</a>
+            <a href="#" onclick="window.scrollTo(0,0)" class="flex items-center gap-3 px-4 py-3 bg-slate-800 text-white rounded-lg font-medium"><i class="ri-dashboard-3-line"></i> Табло</a>
             <div class="pt-4 pb-2 px-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Действия</div>
             <button onclick="calculate()" class="w-full flex items-center gap-3 px-4 py-2.5 text-slate-300 hover:bg-slate-800 hover:text-white rounded-lg transition"><i class="ri-calculator-line"></i> Изчисли</button>
             <button onclick="saveData()" class="w-full flex items-center gap-3 px-4 py-2.5 text-slate-300 hover:bg-slate-800 hover:text-white rounded-lg transition"><i class="ri-save-3-line"></i> Запази</button>
@@ -137,24 +136,24 @@
         <div class="p-4 border-t border-slate-700">
             <div class="flex justify-between items-center text-xs text-slate-400">
                 <span>Cloud Sync</span>
-                <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+                <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
             </div>
             <div class="flex gap-2 mt-2">
-                <button onclick="pullFromGitHub()" class="flex-1 bg-slate-700 hover:bg-slate-600 py-1 rounded text-xs">Pull</button>
-                <button onclick="pushToGitHub()" class="flex-1 bg-brand-600 hover:bg-brand-500 text-white py-1 rounded text-xs">Push</button>
+                <button id="btn-pull" onclick="pullFromGitHub()" class="flex-1 bg-slate-700 hover:bg-slate-600 py-1 rounded text-xs">Pull</button>
+                <button id="btn-push" onclick="pushToGitHub()" class="flex-1 bg-brand-600 hover:bg-brand-500 text-white py-1 rounded text-xs">Push</button>
             </div>
         </div>
     </aside>
 
-    <div class="lg:hidden bg-white border-b border-gray-200 p-4 sticky top-0 z-40 flex justify-between items-center no-print">
+    <div class="lg:hidden bg-white border-b border-gray-200 p-4 sticky top-0 z-40 flex justify-between items-center no-print shadow-sm">
         <div class="flex items-center gap-2">
             <div class="w-8 h-8 bg-brand-600 rounded-lg flex items-center justify-center text-white"><i class="ri-building-4-fill"></i></div>
             <span class="font-bold text-slate-800">Блок 7Д</span>
         </div>
         <div class="flex gap-2">
-            <button onclick="pullFromGitHub()" class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-gray-600"><i class="ri-download-cloud-line"></i></button>
-            <button onclick="pushToGitHub()" class="w-8 h-8 rounded-full bg-brand-50 flex items-center justify-center text-brand-600"><i class="ri-upload-cloud-line"></i></button>
-            <button onclick="openSettings()" class="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-slate-600"><i class="ri-settings-4-line"></i></button>
+            <button onclick="pullFromGitHub()" class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-gray-600 active:bg-gray-200"><i class="ri-download-cloud-line"></i></button>
+            <button onclick="pushToGitHub()" class="w-8 h-8 rounded-full bg-brand-50 flex items-center justify-center text-brand-600 active:bg-brand-100"><i class="ri-upload-cloud-line"></i></button>
+            <button onclick="openSettings()" class="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-slate-600 active:bg-slate-200"><i class="ri-settings-4-line"></i></button>
         </div>
     </div>
 
@@ -171,8 +170,8 @@
                 <button onclick="changeYear(1)" class="text-slate-400 hover:text-brand-600 transition"><i class="ri-arrow-right-s-line text-xl"></i></button>
             </div>
             
-            <div class="flex gap-2">
-                <span class="bg-blue-50 text-blue-700 border border-blue-200 px-3 py-1.5 rounded-md text-xs font-bold flex items-center gap-1"><i class="ri-money-euro-circle-line"></i> Основна валута: EUR</span>
+            <div class="flex gap-2 items-center">
+                <span class="bg-blue-50 text-blue-700 border border-blue-200 px-3 py-1.5 rounded-md text-xs font-bold flex items-center gap-1"><i class="ri-money-euro-circle-line"></i> EUR (€)</span>
                 <button onclick="window.print()" class="btn-secondary hidden sm:flex items-center gap-2"><i class="ri-printer-line"></i> Принт</button>
             </div>
         </div>
@@ -464,6 +463,21 @@
                 <button onclick="copyReportText()" class="w-full btn-primary py-3">Копирай Текста</button>
             </div>
         </div>
+    </div>
+
+    <div style="display:none;">
+        <input type="hidden" id="disp_repair_col_val">
+        <input type="hidden" id="disp_repair_spent_val">
+        <input type="hidden" id="bal_repair_end_val">
+        <input type="hidden" id="disp_mowing_col_val">
+        <input type="hidden" id="disp_mowing_spent_val">
+        <input type="hidden" id="bal_mowing_end_val">
+        <input type="hidden" id="disp_septic_col_val">
+        <input type="hidden" id="disp_septic_spent_val">
+        <input type="hidden" id="bal_septic_end_val">
+        <input type="hidden" id="disp_complex_col_val">
+        <input type="hidden" id="disp_complex_spent_val">
+        <input type="hidden" id="bal_complex_end_val">
     </div>
 
     <script>
@@ -765,21 +779,26 @@
                 const diff = share - paidSoFar; let colorClass = diff > 0.01 ? 'text-rose-500' : 'text-emerald-500'; 
                 sumShare += share; sumPaid += paidSoFar;
 
+                // Color logic for dropdown
+                let statusColorClass = 'text-rose-700 bg-rose-50 border-rose-200';
+                if(savedRepairStatus === 'paid') statusColorClass = 'text-emerald-700 bg-emerald-50 border-emerald-200';
+                if(savedRepairStatus === 'partial') statusColorClass = 'text-amber-700 bg-amber-50 border-amber-200';
+
                 tbody.innerHTML += `<tr>
                     <td class="font-bold text-slate-700">${apt.name}</td>
-                    <td><input type="text" class="form-input text-xs w-full" value="${savedName}" onchange="saveData(true)"></td>
+                    <td><input type="text" class="form-input text-xs w-full inp-repair-name" value="${savedName}" onchange="saveData(true)"></td>
                     <td class="text-center text-slate-500 text-xs">${apt.parts}%</td>
                     <td class="text-right text-xs">${(share).toFixed(2)} €</td>
-                    <td class="text-right"><input type="number" class="form-input w-20 text-right text-xs font-bold" value="${(paidSoFar).toFixed(2)}" onchange="saveData(true); refreshRepairsTable()"></td>
+                    <td class="text-right"><input type="number" class="form-input w-20 text-right text-xs font-bold inp-repair-paid" value="${(paidSoFar).toFixed(2)}" onchange="saveData(true); refreshRepairsTable()"></td>
                     <td class="text-right font-bold text-xs ${colorClass}">${(diff).toFixed(2)} €</td>
                     <td class="text-center no-print">
-                        <select class="form-input text-[10px] font-bold uppercase cursor-pointer ${savedRepairStatus==='paid'?'text-emerald-700 bg-emerald-50 border-emerald-200':(savedRepairStatus==='partial'?'text-amber-700 bg-amber-50 border-amber-200':'text-rose-700 bg-rose-50 border-rose-200')}" onchange="updateRepairStatus(this)">
+                        <select class="form-input text-[10px] font-bold uppercase cursor-pointer ${statusColorClass}" onchange="updateRepairStatus(this)">
                             <option value="unpaid" ${savedRepairStatus==='unpaid'?'selected':''}>НЕПЛАТЕНО</option>
                             <option value="partial" ${savedRepairStatus==='partial'?'selected':''}>ЧАСТИЧНО</option>
                             <option value="paid" ${savedRepairStatus==='paid'?'selected':''}>ПЛАТЕНО</option>
                         </select>
                     </td>
-                    <td class="no-print"><input type="text" class="form-input w-full text-xs text-gray-500 italic" value="${savedNote}" placeholder="..." onchange="saveData(true)"></td>
+                    <td class="no-print"><input type="text" class="form-input w-full text-xs text-gray-500 italic inp-repair-note" value="${savedNote}" placeholder="..." onchange="saveData(true)"></td>
                 </tr>`; 
             }); 
 
@@ -791,7 +810,15 @@
             document.getElementById('rep_sum_diff').className = `px-3 py-4 text-right font-black ${diffColor}`;
         }
 
-        function updateRepairStatus(sel) { saveData(true); refreshRepairsTable(); }
+        function updateRepairStatus(sel) { 
+             // Visual Update
+             if(sel.value === 'paid') sel.className = "form-input text-[10px] font-bold uppercase cursor-pointer text-emerald-700 bg-emerald-50 border-emerald-200";
+             else if(sel.value === 'partial') sel.className = "form-input text-[10px] font-bold uppercase cursor-pointer text-amber-700 bg-amber-50 border-amber-200";
+             else sel.className = "form-input text-[10px] font-bold uppercase cursor-pointer text-rose-700 bg-rose-50 border-rose-200";
+             
+             saveData(true); 
+             refreshRepairsTable(); 
+        }
 
         function saveData(silent = false) { 
             const rows = []; 
