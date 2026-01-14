@@ -2,149 +2,179 @@
 <html lang="bg" class="scroll-smooth">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <meta name="theme-color" content="#0f172a">
-    <title>7D Finance (Modern)</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="theme-color" content="#ffffff">
+    <title>CondoManager Pro</title>
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
 
     <script>
         tailwind.config = {
-            darkMode: 'class',
             theme: {
                 extend: {
-                    fontFamily: { sans: ['"Plus Jakarta Sans"', 'sans-serif'] },
-                    colors: { slate: { 850: '#1e293b', 900: '#0f172a', 950: '#020617' } }
+                    fontFamily: { sans: ['"Inter"', 'sans-serif'] },
+                    colors: {
+                        brand: { 50: '#f0fdfa', 100: '#ccfbf1', 500: '#14b8a6', 600: '#0d9488', 700: '#0f766e', 800: '#115e59', 900: '#134e4a' },
+                        sidebar: '#1e293b'
+                    }
                 }
             }
         }
     </script>
 
     <style>
-        /* Base Styles & Transitions */
-        body { font-family: 'Plus Jakarta Sans', sans-serif; -webkit-tap-highlight-color: transparent; transition: background-color 0.3s, color 0.3s; }
+        body { background-color: #f3f4f6; color: #1f2937; }
         
-        /* Glass Panel */
-        .glass-panel { background: rgba(255, 255, 255, 0.9); backdrop-filter: blur(12px); border-bottom: 1px solid rgba(226, 232, 240, 0.8); }
-        .dark .glass-panel { background: rgba(15, 23, 42, 0.95); border-bottom: 1px solid rgba(30, 41, 59, 0.8); }
-
-        /* Custom Scrollbar */
-        ::-webkit-scrollbar { width: 6px; height: 6px; }
-        ::-webkit-scrollbar-track { background: transparent; }
-        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
-        .dark ::-webkit-scrollbar-thumb { background: #475569; }
-        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
-
-        /* Sticky Columns with Dark Mode support */
-        .sticky-col-check { position: sticky; left: 0; z-index: 20; border-right: 1px solid #e2e8f0; }
-        .sticky-col-apt { position: sticky; left: 40px; z-index: 20; border-right: 2px solid #f1f5f9; box-shadow: 4px 0 6px -4px rgba(0,0,0,0.1); }
+        /* Sidebar & Layout */
+        .sidebar-desktop { width: 260px; height: 100vh; position: fixed; left: 0; top: 0; background: #1e293b; color: white; display: none; flex-direction: column; z-index: 50; }
+        .main-content { margin-left: 0; padding-bottom: 80px; min-height: 100vh; transition: margin 0.3s; }
         
-        .dark .sticky-col-check { border-right: 1px solid #334155; }
-        .dark .sticky-col-apt { border-right: 2px solid #334155; }
+        @media (min-width: 1024px) {
+            .sidebar-desktop { display: flex; }
+            .main-content { margin-left: 260px; padding-bottom: 20px; }
+            .bottom-nav { display: none !important; }
+        }
 
-        /* Table Headers (Always Dark) */
-        thead .sticky-col-check, thead .sticky-col-apt { background-color: #1e293b; color: white; }
-        .dark thead .sticky-col-check, .dark thead .sticky-col-apt { background-color: #0f172a; }
+        /* Cards */
+        .admin-card { background: white; border: 1px solid #e5e7eb; border-radius: 8px; box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05); }
+        .admin-header { border-bottom: 1px solid #f3f4f6; padding: 12px 16px; background: #f9fafb; border-radius: 8px 8px 0 0; }
+        .admin-body { padding: 16px; }
 
-        /* Table Body (Adaptive) */
-        tbody .sticky-col-check, tbody .sticky-col-apt { background-color: white; color: #0f172a; transition: background-color 0.3s, color 0.3s; }
-        .dark tbody .sticky-col-check, .dark tbody .sticky-col-apt { background-color: #1e293b; color: #e2e8f0; }
+        /* Inputs - Official Form Style */
+        .form-input { 
+            background-color: #fff; 
+            border: 1px solid #d1d5db; 
+            border-radius: 6px; 
+            padding: 6px 10px; 
+            font-size: 0.875rem; 
+            width: 100%; 
+            transition: all 0.2s;
+            color: #111827;
+        }
+        .form-input:focus { border-color: #0d9488; outline: none; ring: 1px solid #0d9488; box-shadow: 0 0 0 1px #0d9488; }
+        
+        /* Table Styles */
+        .data-table { width: 100%; border-collapse: separate; border-spacing: 0; }
+        .data-table th { background: #f9fafb; color: #4b5563; font-weight: 600; text-transform: uppercase; font-size: 11px; letter-spacing: 0.05em; padding: 10px; border-bottom: 1px solid #e5e7eb; text-align: left; }
+        .data-table td { padding: 10px; border-bottom: 1px solid #f3f4f6; font-size: 13px; vertical-align: middle; }
+        .data-table tr:hover td { background-color: #f9fafb; }
+        .data-table tr:last-child td { border-bottom: none; }
 
-        /* Inputs */
-        input, select { -webkit-appearance: none; appearance: none; outline: none; }
-        /* Modern Inputs: Gray background, darken on dark mode */
-        .input-modern { background-color: #f8fafc; border: 1px solid transparent; transition: all 0.2s; }
-        .input-modern:focus { background-color: #ffffff; box-shadow: 0 0 0 2px #3b82f6; }
-        .dark .input-modern { background-color: #334155; color: white; }
-        .dark .input-modern:focus { background-color: #1e293b; }
+        /* Sticky Columns */
+        .sticky-check { position: sticky; left: 0; background: white; z-index: 10; border-right: 1px solid #e5e7eb; }
+        .sticky-apt { position: sticky; left: 40px; background: white; z-index: 10; border-right: 2px solid #e5e7eb; }
+        tr:hover .sticky-check, tr:hover .sticky-apt { background-color: #f9fafb; }
+        thead .sticky-check, thead .sticky-apt { background: #f9fafb; z-index: 20; }
 
         /* Badges */
-        .badge-paid { background: #dcfce7; color: #166534; border: 1px solid #bbf7d0; font-weight: 700; }
-        .dark .badge-paid { background: #064e3b; color: #4ade80; border: 1px solid #065f46; }
+        .status-badge { display: inline-flex; align-items: center; px: 2.5; py: 0.5; border-radius: 9999px; font-size: 10px; font-weight: 700; text-transform: uppercase; }
+        .status-paid { background: #ecfdf5; color: #047857; border: 1px solid #a7f3d0; }
+        .status-unpaid { background: #fef2f2; color: #b91c1c; border: 1px solid #fecaca; }
+
+        /* Buttons */
+        .btn-primary { background-color: #0f766e; color: white; border-radius: 6px; padding: 8px 16px; font-size: 13px; font-weight: 600; transition: bg 0.2s; box-shadow: 0 1px 2px rgba(0,0,0,0.1); }
+        .btn-primary:hover { background-color: #115e59; }
+        .btn-secondary { background-color: white; color: #374151; border: 1px solid #d1d5db; border-radius: 6px; padding: 8px 16px; font-size: 13px; font-weight: 600; transition: bg 0.2s; }
+        .btn-secondary:hover { background-color: #f9fafb; border-color: #9ca3af; }
         
-        .badge-unpaid { background: #fee2e2; color: #991b1b; border: 1px solid #fecaca; font-weight: 700; }
-        .dark .badge-unpaid { background: #450a0a; color: #f87171; border: 1px solid #7f1d1d; }
+        .btn-icon { width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; border-radius: 6px; transition: all 0.2s; }
+        .btn-icon-unpaid { color: #9ca3af; border: 1px solid #e5e7eb; }
+        .btn-icon-unpaid:hover { color: #4b5563; border-color: #9ca3af; }
+        .btn-icon-paid { background: #ecfdf5; color: #059669; border: 1px solid #6ee7b7; }
 
         /* Animations */
-        .animate-fade-in { animation: fadeIn 0.2s ease-out; }
-        @keyframes fadeIn { from { opacity: 0; transform: scale(0.98); } to { opacity: 1; transform: scale(1); } }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+        .animate-in { animation: fadeIn 0.3s ease-out; }
 
-        /* Print Styles */
+        /* Mobile Bottom Nav */
+        .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: white; border-top: 1px solid #e5e7eb; padding: 8px; display: flex; justify-content: space-around; z-index: 50; box-shadow: 0 -4px 6px -1px rgba(0,0,0,0.05); }
+        .nav-item { display: flex; flex-direction: column; align-items: center; gap: 2px; color: #6b7280; font-size: 10px; font-weight: 600; padding: 4px 12px; border-radius: 8px; }
+        .nav-item.active { color: #0f766e; background: #f0fdfa; }
+        .nav-item i { font-size: 20px; margin-bottom: 2px; }
+
         @media print {
-            body { background: white; color: black; }
-            .dark body { background: white; color: black; }
-            nav, .no-print, #monthsGrid, button, #settingsModal, #reportModal, #bulkPayModal, .custom-checkbox, .sticky-col-check, .bill-status-icon, #theme-toggle { display: none !important; }
-            .print-only { display: block !important; }
-            input { border: none; background: transparent; padding: 0; font-weight: bold; text-align: right; color: black !important; }
-            textarea { border: none; resize: none; height: auto; color: black !important; }
-            .shadow-sm, .shadow-lg, .shadow-xl, .shadow-2xl { box-shadow: none !important; border: 1px solid #ccc; }
-            .bg-slate-800, .bg-white, .dark\:bg-slate-800 { background: white !important; color: black !important; }
-            main { margin: 0; padding: 0; max-width: 100%; }
-            .sticky-col-apt { position: static; border: none; box-shadow: none; }
-            .grid-cols-1, .grid-cols-2, .grid-cols-3, .grid-cols-4, .grid-cols-5 { display: block; } 
-            .fund-print-container { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 20px; }
+            .sidebar-desktop, .bottom-nav, .no-print { display: none !important; }
+            .main-content { margin: 0; padding: 0; }
+            body { background: white; font-size: 11px; }
+            .admin-card { box-shadow: none; border: 1px solid #ccc; }
+            input { border: none !important; text-align: right; font-weight: bold; padding: 0; }
+            .grid-cols-1, .grid-cols-2, .grid-cols-3, .grid-cols-4, .grid-cols-5 { display: block; }
+            .fund-print-container { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; margin-bottom: 20px; }
             .expenses-print-container { display: flex; gap: 20px; }
-            #mainTable th, #mainTable td { padding: 4px; border: 1px solid #eee; }
-            #sum-grand { color: black !important; }
-            thead { background-color: black !important; color: white !important; } /* Keep header black for contrast */
         }
     </style>
 </head>
-<body class="bg-slate-50 dark:bg-slate-950 text-slate-800 dark:text-slate-200 antialiased pb-24 lg:pb-12" id="bodyRoot">
+<body class="antialiased" id="bodyRoot">
 
-    <nav class="sticky top-0 z-50 glass-panel no-print transition-colors duration-300">
-        <div class="max-w-7xl mx-auto px-4 py-3 flex justify-between items-center">
-            <div class="flex items-center gap-3">
-                <div class="w-10 h-10 bg-slate-900 dark:bg-white rounded-2xl flex items-center justify-center text-white dark:text-slate-900 shadow-xl shadow-slate-300/50 dark:shadow-none transition-all">
-                    <i class="ri-building-4-fill text-2xl"></i>
-                </div>
-                <div>
-                    <h1 class="font-extrabold text-lg leading-tight text-slate-900 dark:text-white tracking-tight">Блок 7Д</h1>
-                    <p class="text-[10px] text-slate-500 dark:text-slate-400 font-bold uppercase tracking-widest">Финанси</p>
-                </div>
-            </div>
-            <div class="flex gap-2 items-center">
-                <button onclick="toggleTheme()" id="theme-toggle" class="w-9 h-9 flex items-center justify-center rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-yellow-400 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors">
-                    <i id="theme-icon" class="ri-sun-line text-lg"></i>
-                </button>
-
-                <div class="bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 px-3 py-2 rounded-xl font-bold text-xs border border-blue-100 dark:border-blue-800 shadow-sm">
-                    EUR (€)
-                </div>
-                <button onclick="openSettings()" class="w-9 h-9 bg-slate-800 dark:bg-slate-700 text-white rounded-xl shadow-lg hover:bg-slate-700 dark:hover:bg-slate-600 transition active:scale-95 flex items-center justify-center" title="Настройки">
-                    <i class="ri-settings-4-fill"></i>
-                </button>
+    <aside class="sidebar-desktop no-print">
+        <div class="p-6 border-b border-slate-700 flex items-center gap-3">
+            <div class="w-8 h-8 bg-brand-500 rounded flex items-center justify-center text-white font-bold text-lg">7</div>
+            <div>
+                <h1 class="font-bold text-lg leading-tight">Блок 7Д</h1>
+                <p class="text-xs text-slate-400">Management Pro</p>
             </div>
         </div>
-    </nav>
+        
+        <nav class="flex-1 p-4 space-y-1">
+            <a href="#" class="flex items-center gap-3 px-4 py-3 bg-slate-800 text-white rounded-lg font-medium"><i class="ri-dashboard-3-line"></i> Табло</a>
+            <div class="pt-4 pb-2 px-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Действия</div>
+            <button onclick="calculate()" class="w-full flex items-center gap-3 px-4 py-2.5 text-slate-300 hover:bg-slate-800 hover:text-white rounded-lg transition"><i class="ri-calculator-line"></i> Изчисли</button>
+            <button onclick="saveData()" class="w-full flex items-center gap-3 px-4 py-2.5 text-slate-300 hover:bg-slate-800 hover:text-white rounded-lg transition"><i class="ri-save-3-line"></i> Запази</button>
+            <button onclick="generateFullReport()" class="w-full flex items-center gap-3 px-4 py-2.5 text-slate-300 hover:bg-slate-800 hover:text-white rounded-lg transition"><i class="ri-file-list-3-line"></i> Генерирай Отчет</button>
+            
+            <div class="pt-4 pb-2 px-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Комуникация</div>
+            <button onclick="generateViberMessage()" class="w-full flex items-center gap-3 px-4 py-2.5 text-slate-300 hover:bg-slate-800 hover:text-white rounded-lg transition"><i class="ri-chat-3-line"></i> Viber (Общ)</button>
+            <button onclick="generateRepairViberReport()" class="w-full flex items-center gap-3 px-4 py-2.5 text-slate-300 hover:bg-slate-800 hover:text-white rounded-lg transition"><i class="ri-hammer-line"></i> Viber (Ремонти)</button>
 
-    <main class="max-w-7xl mx-auto px-4 mt-6 space-y-6">
-
-        <div class="bg-slate-800 dark:bg-slate-900 rounded-3xl p-5 shadow-xl shadow-slate-200 dark:shadow-none text-white flex justify-between items-center no-print transition-colors duration-300">
-            <div class="flex items-center gap-3">
-                <div class="relative">
-                    <div class="w-3 h-3 rounded-full bg-emerald-400 animate-pulse"></div>
-                    <div class="absolute inset-0 w-3 h-3 rounded-full bg-emerald-400 opacity-50 animate-ping"></div>
-                </div>
-                <span class="text-xs font-bold uppercase tracking-wider text-slate-300">GitHub Cloud</span>
+            <div class="mt-8 px-4">
+                 <button onclick="openSettings()" class="w-full bg-slate-700 hover:bg-slate-600 text-white py-2 rounded-lg text-xs font-bold flex items-center justify-center gap-2"><i class="ri-settings-4-line"></i> Настройки</button>
             </div>
+        </nav>
+        <div class="p-4 border-t border-slate-700">
+            <div class="flex justify-between items-center text-xs text-slate-400">
+                <span>Cloud Sync</span>
+                <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+            </div>
+            <div class="flex gap-2 mt-2">
+                <button onclick="pullFromGitHub()" class="flex-1 bg-slate-700 hover:bg-slate-600 py-1 rounded text-xs">Pull</button>
+                <button onclick="pushToGitHub()" class="flex-1 bg-brand-600 hover:bg-brand-500 text-white py-1 rounded text-xs">Push</button>
+            </div>
+        </div>
+    </aside>
+
+    <div class="lg:hidden bg-white border-b border-gray-200 p-4 sticky top-0 z-40 flex justify-between items-center no-print">
+        <div class="flex items-center gap-2">
+            <div class="w-8 h-8 bg-brand-600 rounded-lg flex items-center justify-center text-white"><i class="ri-building-4-fill"></i></div>
+            <span class="font-bold text-slate-800">Блок 7Д</span>
+        </div>
+        <div class="flex gap-2">
+            <button onclick="pullFromGitHub()" class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-gray-600"><i class="ri-download-cloud-line"></i></button>
+            <button onclick="pushToGitHub()" class="w-8 h-8 rounded-full bg-brand-50 flex items-center justify-center text-brand-600"><i class="ri-upload-cloud-line"></i></button>
+            <button onclick="openSettings()" class="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-slate-600"><i class="ri-settings-4-line"></i></button>
+        </div>
+    </div>
+
+    <div class="main-content p-4 lg:p-8 animate-in">
+        
+        <div class="flex flex-col sm:flex-row justify-between items-center mb-6 gap-4 no-print">
+            <div class="admin-card px-4 py-2 flex items-center gap-4">
+                <button onclick="changeYear(-1)" class="text-slate-400 hover:text-brand-600 transition"><i class="ri-arrow-left-s-line text-xl"></i></button>
+                <div class="text-center cursor-pointer" onclick="document.getElementById('reportDate').showPicker()">
+                    <span class="text-xs font-bold text-slate-400 uppercase tracking-wider block">Отчетен период</span>
+                    <h2 class="text-xl font-bold text-slate-800" id="displayYear">2026</h2>
+                    <input type="month" id="reportDate" class="hidden">
+                </div>
+                <button onclick="changeYear(1)" class="text-slate-400 hover:text-brand-600 transition"><i class="ri-arrow-right-s-line text-xl"></i></button>
+            </div>
+            
             <div class="flex gap-2">
-                <button id="btn-pull" onclick="pullFromGitHub()" class="bg-slate-700 hover:bg-slate-600 border border-slate-600 text-xs px-4 py-2 rounded-xl font-bold flex items-center gap-2 transition active:scale-95"><i class="ri-download-cloud-2-fill"></i> ИЗТЕГЛИ</button>
-                <button id="btn-push" onclick="pushToGitHub()" class="bg-blue-600 hover:bg-blue-500 text-white text-xs px-4 py-2 rounded-xl font-bold flex items-center gap-2 shadow-lg shadow-blue-900/20 transition active:scale-95"><i class="ri-upload-cloud-2-fill"></i> КАЧИ</button>
+                <span class="bg-blue-50 text-blue-700 border border-blue-200 px-3 py-1.5 rounded-md text-xs font-bold flex items-center gap-1"><i class="ri-money-euro-circle-line"></i> Основна валута: EUR</span>
+                <button onclick="window.print()" class="btn-secondary hidden sm:flex items-center gap-2"><i class="ri-printer-line"></i> Принт</button>
             </div>
-        </div>
-
-        <div class="bg-white dark:bg-slate-800 rounded-2xl p-3 shadow-sm border border-slate-200 dark:border-slate-700 flex items-center justify-between no-print transition-colors">
-            <button onclick="changeYear(-1)" class="w-10 h-10 flex items-center justify-center bg-slate-50 dark:bg-slate-700 hover:bg-slate-100 dark:hover:bg-slate-600 rounded-xl text-slate-600 dark:text-slate-300 transition"><i class="ri-arrow-left-s-line text-xl"></i></button>
-            <div class="text-center cursor-pointer hover:opacity-75 transition" onclick="document.getElementById('reportDate').showPicker()">
-                <h2 class="text-2xl font-black text-slate-800 dark:text-white tracking-tight" id="displayYear">2026</h2>
-                <input type="month" id="reportDate" class="hidden">
-            </div>
-            <button onclick="changeYear(1)" class="w-10 h-10 flex items-center justify-center bg-slate-50 dark:bg-slate-700 hover:bg-slate-100 dark:hover:bg-slate-600 rounded-xl text-slate-600 dark:text-slate-300 transition"><i class="ri-arrow-right-s-line text-xl"></i></button>
         </div>
 
         <div class="hidden print-only text-center mb-6 border-b-2 border-slate-800 pb-4">
@@ -152,172 +182,153 @@
             <p id="printDateLabel" class="text-lg text-slate-600 mt-2 font-medium"></p>
         </div>
 
-        <div class="grid grid-cols-3 sm:grid-cols-6 gap-2 bg-white dark:bg-slate-800 p-3 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 no-print transition-colors" id="monthsGrid"></div>
+        <div class="grid grid-cols-3 sm:grid-cols-6 lg:grid-cols-12 gap-2 mb-6 no-print" id="monthsGrid"></div>
 
-        <div class="fund-print-container grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-5 gap-4">
-            <div class="bg-white dark:bg-slate-800 rounded-2xl p-5 border border-slate-200 dark:border-slate-700 shadow-sm transition-all hover:shadow-md">
-                <div class="flex justify-between items-center mb-3">
-                    <span class="text-xs font-extrabold text-rose-500 uppercase tracking-wide">Фонд Ремонт</span>
-                    <div class="w-8 h-8 rounded-lg bg-rose-50 dark:bg-rose-900/30 flex items-center justify-center text-rose-500"><i class="ri-tools-fill"></i></div>
+        <div class="fund-print-container grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 mb-6">
+            <div class="admin-card p-4 border-l-4 border-rose-500">
+                <div class="flex justify-between items-start mb-2">
+                    <span class="text-xs font-bold text-slate-500 uppercase">Ремонт</span>
+                    <i class="ri-tools-fill text-rose-500 bg-rose-50 p-1 rounded"></i>
                 </div>
-                <div class="text-2xl font-black text-slate-800 dark:text-white mb-4 tracking-tight" id="bal_repair_end">0.00 €</div>
-                <div class="pt-3 border-t border-slate-100 dark:border-slate-700 flex justify-between items-center text-xs font-medium">
-                    <div class="flex items-center gap-1 text-slate-400">Нач: <input type="number" id="bal_repair_start" value="0" class="w-16 bg-transparent text-slate-600 dark:text-slate-300 font-bold border-b border-dashed border-slate-300 dark:border-slate-600 focus:border-rose-500 text-center" onchange="calculate()">€</div>
-                    <div class="text-right space-y-0.5">
-                        <div class="text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-900/30 px-1.5 py-0.5 rounded">+<span id="disp_repair_col">0</span>€</div>
-                        <div class="text-rose-600 dark:text-rose-400 bg-rose-50 dark:bg-rose-900/30 px-1.5 py-0.5 rounded">-<span id="disp_repair_spent">0</span>€</div>
-                    </div>
+                <div class="text-2xl font-bold text-slate-800 mb-2" id="bal_repair_end">0.00 €</div>
+                <div class="flex items-center justify-between text-xs pt-2 border-t border-gray-100">
+                   <div class="flex items-center gap-1 text-slate-400">Нач: <input type="number" id="bal_repair_start" value="0" class="w-12 bg-transparent text-slate-600 font-bold border-b border-dotted border-slate-300 text-center focus:border-rose-500" onchange="calculate()"></div>
+                   <div class="flex gap-1"><span class="text-emerald-600 bg-emerald-50 px-1 rounded">+<span id="disp_repair_col">0</span></span> <span class="text-rose-600 bg-rose-50 px-1 rounded">-<span id="disp_repair_spent">0</span></span></div>
                 </div>
             </div>
 
-            <div class="bg-white dark:bg-slate-800 rounded-2xl p-5 border border-slate-200 dark:border-slate-700 shadow-sm transition-all hover:shadow-md">
-                <div class="flex justify-between items-center mb-3">
-                    <span class="text-xs font-extrabold text-emerald-500 uppercase tracking-wide">Косене</span>
-                    <div class="w-8 h-8 rounded-lg bg-emerald-50 dark:bg-emerald-900/30 flex items-center justify-center text-emerald-500"><i class="ri-plant-fill"></i></div>
+            <div class="admin-card p-4 border-l-4 border-emerald-500">
+                <div class="flex justify-between items-start mb-2">
+                    <span class="text-xs font-bold text-slate-500 uppercase">Косене</span>
+                    <i class="ri-plant-fill text-emerald-500 bg-emerald-50 p-1 rounded"></i>
                 </div>
-                <div class="text-2xl font-black text-slate-800 dark:text-white mb-4 tracking-tight" id="bal_mowing_end">0.00 €</div>
-                <div class="pt-3 border-t border-slate-100 dark:border-slate-700 flex justify-between items-center text-xs font-medium">
-                    <div class="flex items-center gap-1 text-slate-400">Нач: <input type="number" id="bal_mowing_start" value="0" class="w-16 bg-transparent text-slate-600 dark:text-slate-300 font-bold border-b border-dashed border-slate-300 dark:border-slate-600 focus:border-emerald-500 text-center" onchange="calculate()">€</div>
-                    <div class="text-right space-y-0.5">
-                        <div class="text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-900/30 px-1.5 py-0.5 rounded">+<span id="disp_mowing_col">0</span>€</div>
-                        <div class="text-rose-600 dark:text-rose-400 bg-rose-50 dark:bg-rose-900/30 px-1.5 py-0.5 rounded">-<span id="disp_mowing_spent">0</span>€</div>
-                    </div>
+                <div class="text-2xl font-bold text-slate-800 mb-2" id="bal_mowing_end">0.00 €</div>
+                <div class="flex items-center justify-between text-xs pt-2 border-t border-gray-100">
+                   <div class="flex items-center gap-1 text-slate-400">Нач: <input type="number" id="bal_mowing_start" value="0" class="w-12 bg-transparent text-slate-600 font-bold border-b border-dotted border-slate-300 text-center focus:border-emerald-500" onchange="calculate()"></div>
+                   <div class="flex gap-1"><span class="text-emerald-600 bg-emerald-50 px-1 rounded">+<span id="disp_mowing_col">0</span></span> <span class="text-rose-600 bg-rose-50 px-1 rounded">-<span id="disp_mowing_spent">0</span></span></div>
                 </div>
             </div>
 
-            <div class="bg-white dark:bg-slate-800 rounded-2xl p-5 border border-slate-200 dark:border-slate-700 shadow-sm transition-all hover:shadow-md">
-                <div class="flex justify-between items-center mb-3">
-                    <span class="text-xs font-extrabold text-violet-500 uppercase tracking-wide">Яма</span>
-                    <div class="w-8 h-8 rounded-lg bg-violet-50 dark:bg-violet-900/30 flex items-center justify-center text-violet-500"><i class="ri-drop-fill"></i></div>
+            <div class="admin-card p-4 border-l-4 border-violet-500">
+                <div class="flex justify-between items-start mb-2">
+                    <span class="text-xs font-bold text-slate-500 uppercase">Яма</span>
+                    <i class="ri-drop-fill text-violet-500 bg-violet-50 p-1 rounded"></i>
                 </div>
-                <div class="text-2xl font-black text-slate-800 dark:text-white mb-4 tracking-tight" id="bal_septic_end">0.00 €</div>
-                <div class="pt-3 border-t border-slate-100 dark:border-slate-700 flex justify-between items-center text-xs font-medium">
-                    <div class="flex items-center gap-1 text-slate-400">Нач: <input type="number" id="bal_septic_start" value="0" class="w-16 bg-transparent text-slate-600 dark:text-slate-300 font-bold border-b border-dashed border-slate-300 dark:border-slate-600 focus:border-violet-500 text-center" onchange="calculate()">€</div>
-                    <div class="text-right space-y-0.5">
-                        <div class="text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-900/30 px-1.5 py-0.5 rounded">+<span id="disp_septic_col">0</span>€</div>
-                        <div class="text-rose-600 dark:text-rose-400 bg-rose-50 dark:bg-rose-900/30 px-1.5 py-0.5 rounded">-<span id="disp_septic_spent">0</span>€</div>
-                    </div>
+                <div class="text-2xl font-bold text-slate-800 mb-2" id="bal_septic_end">0.00 €</div>
+                <div class="flex items-center justify-between text-xs pt-2 border-t border-gray-100">
+                   <div class="flex items-center gap-1 text-slate-400">Нач: <input type="number" id="bal_septic_start" value="0" class="w-12 bg-transparent text-slate-600 font-bold border-b border-dotted border-slate-300 text-center focus:border-violet-500" onchange="calculate()"></div>
+                   <div class="flex gap-1"><span class="text-emerald-600 bg-emerald-50 px-1 rounded">+<span id="disp_septic_col">0</span></span> <span class="text-rose-600 bg-rose-50 px-1 rounded">-<span id="disp_septic_spent">0</span></span></div>
                 </div>
             </div>
 
-            <div class="bg-white dark:bg-slate-800 rounded-2xl p-5 border border-slate-200 dark:border-slate-700 shadow-sm transition-all hover:shadow-md">
-                <div class="flex justify-between items-center mb-3">
-                    <span class="text-xs font-extrabold text-amber-500 uppercase tracking-wide">Комплекс</span>
-                    <div class="w-8 h-8 rounded-lg bg-amber-50 dark:bg-amber-900/30 flex items-center justify-center text-amber-500"><i class="ri-community-fill"></i></div>
+            <div class="admin-card p-4 border-l-4 border-amber-500">
+                <div class="flex justify-between items-start mb-2">
+                    <span class="text-xs font-bold text-slate-500 uppercase">Комплекс</span>
+                    <i class="ri-community-fill text-amber-500 bg-amber-50 p-1 rounded"></i>
                 </div>
-                <div class="text-2xl font-black text-slate-800 dark:text-white mb-4 tracking-tight" id="bal_complex_end">0.00 €</div>
-                <div class="pt-3 border-t border-slate-100 dark:border-slate-700 flex justify-between items-center text-xs font-medium">
-                    <div class="flex items-center gap-1 text-slate-400">Нач: <input type="number" id="bal_complex_start" value="0" class="w-16 bg-transparent text-slate-600 dark:text-slate-300 font-bold border-b border-dashed border-slate-300 dark:border-slate-600 focus:border-amber-500 text-center" onchange="calculate()">€</div>
-                    <div class="text-right space-y-0.5">
-                        <div class="text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-900/30 px-1.5 py-0.5 rounded">+<span id="disp_complex_col">0</span>€</div>
-                        <div class="text-rose-600 dark:text-rose-400 bg-rose-50 dark:bg-rose-900/30 px-1.5 py-0.5 rounded">-<span id="disp_complex_spent">0</span>€</div>
-                    </div>
+                <div class="text-2xl font-bold text-slate-800 mb-2" id="bal_complex_end">0.00 €</div>
+                <div class="flex items-center justify-between text-xs pt-2 border-t border-gray-100">
+                   <div class="flex items-center gap-1 text-slate-400">Нач: <input type="number" id="bal_complex_start" value="0" class="w-12 bg-transparent text-slate-600 font-bold border-b border-dotted border-slate-300 text-center focus:border-amber-500" onchange="calculate()"></div>
+                   <div class="flex gap-1"><span class="text-emerald-600 bg-emerald-50 px-1 rounded">+<span id="disp_complex_col">0</span></span> <span class="text-rose-600 bg-rose-50 px-1 rounded">-<span id="disp_complex_spent">0</span></span></div>
                 </div>
             </div>
 
-            <div class="bg-slate-800 dark:bg-slate-950 text-white rounded-2xl p-5 border-l-4 border-blue-500 shadow-lg shadow-slate-300/20 dark:shadow-none ring-1 ring-black/5 flex flex-col justify-between relative overflow-hidden transition-colors">
-                <div class="absolute right-0 top-0 w-24 h-24 bg-blue-500/10 rounded-full -mr-8 -mt-8 pointer-events-none"></div>
-                <div class="flex justify-between items-center mb-3 relative z-10">
-                    <span class="text-xs font-bold text-slate-400 uppercase tracking-wide">Наличност Каса</span>
-                    <div class="w-8 h-8 rounded-lg bg-slate-700 dark:bg-slate-800 flex items-center justify-center text-blue-400"><i class="ri-safe-2-fill"></i></div>
+            <div class="admin-card bg-slate-800 text-white border-none p-4 flex flex-col justify-between relative overflow-hidden">
+                <div class="absolute right-0 top-0 w-20 h-20 bg-white/5 rounded-full -mr-6 -mt-6"></div>
+                <div>
+                    <span class="text-[10px] font-bold text-slate-300 uppercase tracking-wide">НАЛИЧНОСТ КАСА</span>
+                    <div class="text-3xl font-bold mt-1" id="total_cash_in_hand">0.00 €</div>
                 </div>
-                <div class="text-2xl font-black text-white mb-2 tracking-tight relative z-10" id="total_cash_in_hand">0.00 €</div>
-                <div class="text-[10px] text-slate-400 font-medium relative z-10 border-t border-slate-700 pt-2">
-                    Нач. салда + Събрани (без разходи)
-                </div>
+                <div class="text-[10px] text-slate-400 mt-2">Сбор на всички фондове (без разходи)</div>
             </div>
         </div>
 
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 relative no-print">
-            <div class="absolute -top-3 right-2 bg-blue-100 dark:bg-blue-900/50 text-blue-700 dark:text-blue-300 px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wide border border-blue-200 dark:border-blue-800 shadow-sm z-10" id="inputHint">Входни данни (EUR)</div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 mb-6 relative no-print">
+            <div class="absolute -top-3 right-0 bg-brand-50 text-brand-700 px-2 py-0.5 rounded text-[10px] font-bold border border-brand-200" id="inputHint">Вход (EUR)</div>
             
-            <div class="bg-white dark:bg-slate-800 p-4 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm space-y-2 transition-colors">
-                <h3 class="text-xs font-black text-blue-600 dark:text-blue-400 uppercase mb-3">⚡ Общи Разходи</h3>
-                <div class="flex justify-between items-center"><span class="text-xs font-medium text-slate-500 dark:text-slate-400">Ток Вход (€)</span><div class="flex gap-1 items-center"><input id="c_tok_vhod" type="number" value="19.21" class="input-modern input-cell w-20 text-right rounded-lg font-bold text-sm text-slate-700"><button id="btn_paid_c_tok_vhod" onclick="toggleBillStatus('c_tok_vhod')" class="bill-btn bill-btn-unpaid w-7 h-7 flex items-center justify-center rounded-lg"><i class="ri-check-line"></i></button></div></div>
-                <div class="flex justify-between items-center"><span class="text-xs font-medium text-slate-500 dark:text-slate-400">Ток Асансьор (€)</span><div class="flex gap-1 items-center"><input id="c_tok_lift" type="number" value="56.89" class="input-modern input-cell w-20 text-right rounded-lg font-bold text-sm text-slate-700"><button id="btn_paid_c_tok_lift" onclick="toggleBillStatus('c_tok_lift')" class="bill-btn bill-btn-unpaid w-7 h-7 flex items-center justify-center rounded-lg"><i class="ri-check-line"></i></button></div></div>
-                <div class="flex justify-between items-center"><span class="text-xs font-medium text-slate-500 dark:text-slate-400">Ток Абонатна (€)</span><div class="flex gap-1 items-center"><input id="c_tok_abonatna" type="number" value="101.56" class="input-modern input-cell w-20 text-right rounded-lg font-bold text-sm text-slate-700"><button id="btn_paid_c_tok_abonatna" onclick="toggleBillStatus('c_tok_abonatna')" class="bill-btn bill-btn-unpaid w-7 h-7 flex items-center justify-center rounded-lg"><i class="ri-check-line"></i></button></div></div>
-                <div class="flex justify-between items-center"><span class="text-xs font-medium text-slate-500 dark:text-slate-400">М.такса Ас. (€)</span><div class="flex gap-1 items-center"><input id="c_lift_month" type="number" value="75.00" class="input-modern input-cell w-20 text-right rounded-lg font-bold text-sm text-slate-700"><button id="btn_paid_c_lift_month" onclick="toggleBillStatus('c_lift_month')" class="bill-btn bill-btn-unpaid w-7 h-7 flex items-center justify-center rounded-lg"><i class="ri-check-line"></i></button></div></div>
-                <div class="flex justify-between items-center"><span class="text-xs font-medium text-slate-500 dark:text-slate-400">Поч. Вход (€)</span><div class="flex gap-1 items-center"><input id="c_clean_vhod" type="number" value="140.00" class="input-modern input-cell w-20 text-right rounded-lg font-bold text-sm text-slate-700"><button id="btn_paid_c_clean_vhod" onclick="toggleBillStatus('c_clean_vhod')" class="bill-btn bill-btn-unpaid w-7 h-7 flex items-center justify-center rounded-lg"><i class="ri-check-line"></i></button></div></div>
+            <div class="admin-card">
+                <div class="admin-header text-xs font-bold text-brand-700 uppercase">⚡ Общи Разходи</div>
+                <div class="admin-body space-y-3">
+                    <div class="grid grid-cols-2 items-center"><label class="text-xs font-medium text-gray-500">Ток Вход</label><div class="flex gap-1"><input id="c_tok_vhod" type="number" value="19.21" class="form-input text-right"><button id="btn_paid_c_tok_vhod" onclick="toggleBillStatus('c_tok_vhod')" class="btn-icon btn-icon-unpaid"><i class="ri-check-line"></i></button></div></div>
+                    <div class="grid grid-cols-2 items-center"><label class="text-xs font-medium text-gray-500">Ток Асансьор</label><div class="flex gap-1"><input id="c_tok_lift" type="number" value="56.89" class="form-input text-right"><button id="btn_paid_c_tok_lift" onclick="toggleBillStatus('c_tok_lift')" class="btn-icon btn-icon-unpaid"><i class="ri-check-line"></i></button></div></div>
+                    <div class="grid grid-cols-2 items-center"><label class="text-xs font-medium text-gray-500">Ток Абонатна</label><div class="flex gap-1"><input id="c_tok_abonatna" type="number" value="101.56" class="form-input text-right"><button id="btn_paid_c_tok_abonatna" onclick="toggleBillStatus('c_tok_abonatna')" class="btn-icon btn-icon-unpaid"><i class="ri-check-line"></i></button></div></div>
+                    <div class="grid grid-cols-2 items-center"><label class="text-xs font-medium text-gray-500">М.такса Ас.</label><div class="flex gap-1"><input id="c_lift_month" type="number" value="75.00" class="form-input text-right"><button id="btn_paid_c_lift_month" onclick="toggleBillStatus('c_lift_month')" class="btn-icon btn-icon-unpaid"><i class="ri-check-line"></i></button></div></div>
+                    <div class="grid grid-cols-2 items-center"><label class="text-xs font-medium text-gray-500">Поч. Вход</label><div class="flex gap-1"><input id="c_clean_vhod" type="number" value="140.00" class="form-input text-right"><button id="btn_paid_c_clean_vhod" onclick="toggleBillStatus('c_clean_vhod')" class="btn-icon btn-icon-unpaid"><i class="ri-check-line"></i></button></div></div>
+                </div>
             </div>
 
-            <div class="bg-white dark:bg-slate-800 p-4 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm space-y-2 transition-colors">
-                <h3 class="text-xs font-black text-blue-600 dark:text-blue-400 uppercase mb-3">🔧 Годишни</h3>
-                <div class="flex justify-between items-center"><span class="text-xs font-medium text-slate-500 dark:text-slate-400">Свързаност Ас.(€)</span><div class="flex gap-1 items-center"><input id="c_lift_conn" type="number" value="72.00" class="input-modern input-cell w-20 text-right rounded-lg font-bold text-sm text-slate-700" onchange="calculate()"><button id="btn_paid_c_lift_conn" onclick="toggleBillStatus('c_lift_conn')" class="bill-btn bill-btn-unpaid w-7 h-7 flex items-center justify-center rounded-lg"><i class="ri-check-line"></i></button></div></div>
-                <div class="text-right text-[10px] text-blue-400 font-medium -mt-1 pr-9" id="hint_conn"></div>
-                <div class="flex justify-between items-center"><span class="text-xs font-medium text-slate-500 dark:text-slate-400">Техн. преглед (€)</span><div class="flex gap-1 items-center"><input id="c_lift_tech" type="number" value="90.00" class="input-modern input-cell w-20 text-right rounded-lg font-bold text-sm text-slate-700" onchange="calculate()"><button id="btn_paid_c_lift_tech" onclick="toggleBillStatus('c_lift_tech')" class="bill-btn bill-btn-unpaid w-7 h-7 flex items-center justify-center rounded-lg"><i class="ri-check-line"></i></button></div></div>
-                <div class="text-right text-[10px] text-blue-400 font-medium -mt-1 pr-9" id="hint_tech"></div>
+            <div class="admin-card">
+                <div class="admin-header text-xs font-bold text-blue-600 uppercase">🔧 Годишни</div>
+                <div class="admin-body space-y-3">
+                    <div class="grid grid-cols-2 items-center"><label class="text-xs font-medium text-gray-500">Свързаност Ас.</label><div class="flex gap-1"><input id="c_lift_conn" type="number" value="72.00" class="form-input text-right" onchange="calculate()"><button id="btn_paid_c_lift_conn" onclick="toggleBillStatus('c_lift_conn')" class="btn-icon btn-icon-unpaid"><i class="ri-check-line"></i></button></div></div>
+                    <div class="text-right text-[10px] text-brand-600 -mt-2 pr-10" id="hint_conn"></div>
+                    <div class="grid grid-cols-2 items-center"><label class="text-xs font-medium text-gray-500">Техн. преглед</label><div class="flex gap-1"><input id="c_lift_tech" type="number" value="90.00" class="form-input text-right" onchange="calculate()"><button id="btn_paid_c_lift_tech" onclick="toggleBillStatus('c_lift_tech')" class="btn-icon btn-icon-unpaid"><i class="ri-check-line"></i></button></div></div>
+                    <div class="text-right text-[10px] text-brand-600 -mt-2 pr-10" id="hint_tech"></div>
+                </div>
             </div>
 
-            <div class="bg-white dark:bg-slate-800 p-4 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm space-y-2 transition-colors">
-                <h3 class="text-xs font-black text-amber-600 dark:text-amber-500 uppercase mb-3">🚗 Гараж</h3>
-                <div class="flex justify-between items-center"><span class="text-xs font-medium text-slate-500 dark:text-slate-400">Ток Гараж (€)</span><div class="flex gap-1 items-center"><input id="c_tok_garaj" type="number" value="60.00" class="input-modern input-cell w-20 text-right rounded-lg font-bold text-sm text-slate-700"><button id="btn_paid_c_tok_garaj" onclick="toggleBillStatus('c_tok_garaj')" class="bill-btn bill-btn-unpaid w-7 h-7 flex items-center justify-center rounded-lg"><i class="ri-check-line"></i></button></div></div>
-                <div class="flex justify-between items-center"><span class="text-xs font-medium text-slate-500 dark:text-slate-400">Почистване (€)</span><div class="flex gap-1 items-center"><input id="c_clean_garaj" type="number" value="175.00" class="input-modern input-cell w-20 text-right rounded-lg font-bold text-sm text-slate-700"><button id="btn_paid_c_clean_garaj" onclick="toggleBillStatus('c_clean_garaj')" class="bill-btn bill-btn-unpaid w-7 h-7 flex items-center justify-center rounded-lg"><i class="ri-check-line"></i></button></div></div>
+            <div class="admin-card">
+                <div class="admin-header text-xs font-bold text-amber-600 uppercase">🚗 Гараж</div>
+                <div class="admin-body space-y-3">
+                    <div class="grid grid-cols-2 items-center"><label class="text-xs font-medium text-gray-500">Ток Гараж</label><div class="flex gap-1"><input id="c_tok_garaj" type="number" value="60.00" class="form-input text-right"><button id="btn_paid_c_tok_garaj" onclick="toggleBillStatus('c_tok_garaj')" class="btn-icon btn-icon-unpaid"><i class="ri-check-line"></i></button></div></div>
+                    <div class="grid grid-cols-2 items-center"><label class="text-xs font-medium text-gray-500">Почистване</label><div class="flex gap-1"><input id="c_clean_garaj" type="number" value="175.00" class="form-input text-right"><button id="btn_paid_c_clean_garaj" onclick="toggleBillStatus('c_clean_garaj')" class="btn-icon btn-icon-unpaid"><i class="ri-check-line"></i></button></div></div>
+                </div>
             </div>
 
-            <div class="bg-white dark:bg-slate-800 p-4 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm space-y-2 transition-colors">
-                <h3 class="text-xs font-black text-emerald-600 dark:text-emerald-500 uppercase mb-3">🌱 Други</h3>
-                <div class="flex justify-between items-center"><span class="text-xs font-medium text-slate-500 dark:text-slate-400">Косене (€)</span><div class="flex gap-1 items-center"><input id="c_mowing" type="number" value="100.00" class="input-modern input-cell w-20 text-right rounded-lg font-bold text-sm text-slate-700"><button id="btn_paid_c_mowing" onclick="toggleBillStatus('c_mowing')" class="bill-btn bill-btn-unpaid w-7 h-7 flex items-center justify-center rounded-lg"><i class="ri-check-line"></i></button></div></div>
-                <div class="flex justify-between items-center"><span class="text-xs font-medium text-slate-500 dark:text-slate-400">Септична яма (€)</span><div class="flex gap-1 items-center"><input id="c_septic" type="number" value="100.00" class="input-modern input-cell w-20 text-right rounded-lg font-bold text-sm text-slate-700"><button id="btn_paid_c_septic" onclick="toggleBillStatus('c_septic')" class="bill-btn bill-btn-unpaid w-7 h-7 flex items-center justify-center rounded-lg"><i class="ri-check-line"></i></button></div></div>
-                <div class="flex justify-between items-center"><span class="text-xs font-medium text-slate-500 dark:text-slate-400">Поч. комплекс (€)</span><div class="flex gap-1 items-center"><input id="c_clean_complex" type="number" value="80.00" class="input-modern input-cell w-20 text-right rounded-lg font-bold text-sm text-slate-700"><button id="btn_paid_c_clean_complex" onclick="toggleBillStatus('c_clean_complex')" class="bill-btn bill-btn-unpaid w-7 h-7 flex items-center justify-center rounded-lg"><i class="ri-check-line"></i></button></div></div>
-                <div class="flex justify-between items-center"><span class="text-xs font-medium text-slate-500 dark:text-slate-400">Такса ремонт (€)</span><div class="flex gap-1 items-center"><input id="c_repair" type="number" value="200.00" class="input-modern input-cell w-20 text-right rounded-lg font-bold text-sm text-slate-700"></div></div>
+            <div class="admin-card">
+                <div class="admin-header text-xs font-bold text-emerald-600 uppercase">🌱 Други</div>
+                <div class="admin-body space-y-3">
+                    <div class="grid grid-cols-2 items-center"><label class="text-xs font-medium text-gray-500">Косене</label><div class="flex gap-1"><input id="c_mowing" type="number" value="100.00" class="form-input text-right"><button id="btn_paid_c_mowing" onclick="toggleBillStatus('c_mowing')" class="btn-icon btn-icon-unpaid"><i class="ri-check-line"></i></button></div></div>
+                    <div class="grid grid-cols-2 items-center"><label class="text-xs font-medium text-gray-500">Септична яма</label><div class="flex gap-1"><input id="c_septic" type="number" value="100.00" class="form-input text-right"><button id="btn_paid_c_septic" onclick="toggleBillStatus('c_septic')" class="btn-icon btn-icon-unpaid"><i class="ri-check-line"></i></button></div></div>
+                    <div class="grid grid-cols-2 items-center"><label class="text-xs font-medium text-gray-500">Поч. комплекс</label><div class="flex gap-1"><input id="c_clean_complex" type="number" value="80.00" class="form-input text-right"><button id="btn_paid_c_clean_complex" onclick="toggleBillStatus('c_clean_complex')" class="btn-icon btn-icon-unpaid"><i class="ri-check-line"></i></button></div></div>
+                    <div class="grid grid-cols-2 items-center"><label class="text-xs font-medium text-gray-500">Такса ремонт</label><div class="flex gap-1"><input id="c_repair" type="number" value="200.00" class="form-input text-right"></div></div>
+                </div>
             </div>
         </div>
 
-        <div class="grid grid-cols-2 lg:grid-cols-7 gap-3 no-print">
-            <button onclick="calculate()" class="col-span-1 bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-2xl shadow-lg shadow-blue-500/30 transition active:scale-95 flex flex-col items-center justify-center gap-1"><i class="ri-calculator-fill text-xl"></i> <span class="text-[10px] uppercase">Изчисли</span></button>
-            <button onclick="saveData()" class="col-span-1 bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-3 rounded-2xl shadow-lg shadow-emerald-500/30 transition active:scale-95 flex flex-col items-center justify-center gap-1"><i class="ri-save-3-fill text-xl"></i> <span class="text-[10px] uppercase">Запази</span></button>
-            <button onclick="generateViberMessage()" class="col-span-2 lg:col-span-1 bg-violet-600 hover:bg-violet-700 text-white font-bold py-3 rounded-2xl shadow-lg shadow-violet-500/30 transition active:scale-95 flex flex-col items-center justify-center gap-1"><i class="ri-chat-3-fill text-xl"></i> <span class="text-[10px] uppercase">Viber</span></button>
-            <button onclick="generateRepairViberReport()" class="col-span-1 bg-amber-500 hover:bg-amber-600 text-white font-bold py-3 rounded-2xl shadow-lg shadow-amber-500/30 transition active:scale-95 flex flex-col items-center justify-center gap-1"><i class="ri-hammer-fill text-xl"></i> <span class="text-[10px] uppercase">Viber (Рем.)</span></button>
-            <button onclick="generateFullReport()" class="col-span-1 bg-cyan-500 hover:bg-cyan-600 text-white font-bold py-3 rounded-2xl shadow-lg shadow-cyan-500/30 transition active:scale-95 flex flex-col items-center justify-center gap-1"><i class="ri-file-list-3-fill text-xl"></i> <span class="text-[10px] uppercase">Отчет</span></button>
-            <button onclick="exportToCSV()" class="col-span-1 bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 rounded-2xl shadow-lg shadow-emerald-700/30 transition active:scale-95 flex flex-col items-center justify-center gap-1"><i class="ri-file-excel-2-fill text-xl"></i> <span class="text-[10px] uppercase">Excel</span></button>
-            <button onclick="startNewMonth()" class="col-span-1 bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 dark:hover:bg-slate-600 text-slate-700 dark:text-white font-bold py-3 rounded-2xl shadow transition active:scale-95 flex flex-col items-center justify-center gap-1"><i class="ri-calendar-event-fill text-xl"></i> <span class="text-[10px] uppercase">Нов Месец</span></button>
-            <button onclick="window.print()" class="col-span-7 lg:col-span-1 bg-slate-800 dark:bg-slate-700 hover:bg-slate-900 dark:hover:bg-slate-600 text-white font-bold py-3 rounded-2xl shadow-lg shadow-slate-500/30 transition active:scale-95 flex flex-col items-center justify-center gap-1"><i class="ri-printer-fill text-xl"></i> <span class="text-[10px] uppercase">Принт</span></button>
-        </div>
-
-        <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-lg shadow-slate-200 dark:shadow-none border border-slate-200 dark:border-slate-700 overflow-hidden ring-1 ring-black/5 transition-colors">
+        <div class="admin-card overflow-hidden">
+            <div class="admin-header flex justify-between items-center">
+                <h3 class="text-sm font-bold text-slate-700">🗓️ МЕСЕЧЕН ОТЧЕТ</h3>
+                <div id="bulkActionBar" class="hidden flex items-center gap-3 animate-in">
+                    <span class="text-xs font-bold text-brand-600 bg-brand-50 px-2 py-1 rounded"><span id="selectedCount">0</span> избрани</span>
+                    <button onclick="openBulkPayModal()" class="text-xs bg-brand-600 text-white px-3 py-1.5 rounded hover:bg-brand-700 font-medium">Маркирай платени</button>
+                </div>
+            </div>
             <div class="overflow-x-auto">
-                <table class="w-full text-sm" id="mainTable">
-                    <thead class="bg-slate-850 text-white text-xs uppercase font-bold sticky top-0 z-20">
+                <table class="data-table" id="mainTable">
+                    <thead>
                         <tr>
-                            <th class="px-2 py-4 no-print w-10 text-center sticky-col-check">
-                                <input type="checkbox" id="selectAllCheckbox" class="custom-checkbox" onchange="toggleSelectAll()">
-                            </th>
-                            <th class="px-3 py-4 sticky-col-apt min-w-[70px] shadow-sm">Ап.</th>
-                            <th class="px-3 py-4 min-w-[150px] text-left">Име</th>
-                            <th class="px-2 py-4 w-16 text-center">ХОРА</th>
-                            <th class="px-2 py-4 w-16 text-center">ГАРАЖ</th>
-                            <th class="px-2 py-4 w-20 text-center">ЕЛ. КОЛА <span class="currency-symbol text-[10px] opacity-70">€</span></th>
-                            <th class="px-3 py-4 text-right text-white">Сметка (€)</th>
-                            <th class="px-3 py-4 text-rose-300 text-right">Стари (€)</th>
-                            <th class="px-3 py-4 text-right">ОБЩО (€)</th>
-                            <th class="px-3 py-4 min-w-[120px] text-center no-print">Статус</th>
-                            <th class="px-3 py-4 min-w-[120px] no-print">Коментар</th>
+                            <th class="sticky-check w-10 text-center"><input type="checkbox" id="selectAllCheckbox" class="custom-checkbox" onchange="toggleSelectAll()"></th>
+                            <th class="sticky-apt w-16">Ап.</th>
+                            <th>Име</th>
+                            <th class="text-center">Хора</th>
+                            <th class="text-center">Гараж</th>
+                            <th class="text-center">EV</th>
+                            <th class="text-right">Сметка</th>
+                            <th class="text-right text-rose-500">Стари</th>
+                            <th class="text-right">ОБЩО</th>
+                            <th class="text-center no-print">Статус</th>
+                            <th class="no-print">Коментар</th>
                         </tr>
                     </thead>
-                    <tbody class="divide-y divide-slate-100 dark:divide-slate-700 font-medium text-slate-800 dark:text-slate-200"></tbody>
-                    <tfoot class="bg-slate-100 dark:bg-slate-900 font-bold text-slate-800 dark:text-white border-t-2 border-slate-200 dark:border-slate-700">
+                    <tbody class="divide-y divide-gray-100"></tbody>
+                    <tfoot class="bg-gray-50 font-bold text-slate-800">
                         <tr>
                             <td class="no-print"></td>
-                            <td colspan="7" class="px-4 py-4 text-right text-xs uppercase tracking-wide">ТОТАЛ <span class="currency-symbol">€</span>:</td>
-                            <td class="px-3 py-4 text-right text-lg text-blue-700 dark:text-blue-400 font-black" id="sum-grand">0.00 €</td>
+                            <td colspan="7" class="text-right text-xs uppercase tracking-wide p-3">ТОТАЛ <span class="currency-symbol">€</span>:</td>
+                            <td class="text-right text-lg text-brand-700 p-3" id="sum-grand">0.00 €</td>
                             <td colspan="2" class="no-print"></td>
                         </tr>
                     </tfoot>
                 </table>
             </div>
-            <div id="bulkActionBar" class="bg-blue-50 dark:bg-blue-900/50 border-t border-blue-100 dark:border-blue-800 p-3 hidden flex justify-between items-center no-print animate-fade-in fixed bottom-0 left-0 right-0 z-50 shadow-2xl lg:static lg:shadow-none">
-                <span class="text-xs font-bold text-blue-800 dark:text-blue-200 uppercase pl-2"><span id="selectedCount">0</span> избрани</span>
-                <button onclick="openBulkPayModal()" class="bg-blue-600 text-white px-6 py-2 rounded-lg text-xs font-bold hover:bg-blue-700 transition shadow-lg">Маркирай като Платени</button>
-            </div>
         </div>
 
-        <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-lg border border-slate-200 dark:border-slate-700 overflow-hidden p-5 transition-colors">
-            <h3 class="font-bold text-sm mb-4 text-slate-800 dark:text-white uppercase flex items-center gap-2 border-b border-slate-100 dark:border-slate-700 pb-2">
-                <i class="ri-pie-chart-2-fill text-blue-500"></i> ОТЧЕТ СЪБИРАЕМОСТ ПО ПЕРА (Реално платени)
-            </h3>
-            <div class="overflow-x-auto">
+        <div class="admin-card overflow-hidden">
+             <div class="admin-header text-sm font-bold text-slate-700">📊 СЪБИРАЕМОСТ</div>
+             <div class="overflow-x-auto">
                 <table class="w-full text-sm text-left">
-                    <thead class="bg-slate-50 dark:bg-slate-900 text-slate-500 dark:text-slate-400 text-xs uppercase">
+                    <thead class="bg-gray-50 text-gray-500 text-xs uppercase">
                         <tr>
                             <th class="px-4 py-3">Категория</th>
                             <th class="px-4 py-3 text-right">Дължима сума (€)</th>
@@ -325,64 +336,61 @@
                             <th class="px-4 py-3 text-right">Дефицит / Излишък (€)</th>
                         </tr>
                     </thead>
-                    <tbody class="divide-y divide-slate-100 dark:divide-slate-700 font-medium text-slate-700 dark:text-slate-300" id="collectionReportBody">
-                        </tbody>
+                    <tbody class="divide-y divide-gray-100 font-medium text-gray-700" id="collectionReportBody"></tbody>
                 </table>
             </div>
         </div>
 
         <div class="expenses-print-container grid grid-cols-1 lg:grid-cols-3 gap-6">
-            <div class="lg:col-span-2 bg-white dark:bg-slate-800 rounded-2xl p-5 shadow-sm border border-slate-200 dark:border-slate-700 transition-colors">
-                <h3 class="font-bold text-sm mb-4 text-slate-800 dark:text-white uppercase flex items-center gap-2 border-b border-slate-100 dark:border-slate-700 pb-2"><i class="ri-list-check-2 text-blue-500"></i> Текущи Разходи</h3>
-                <div class="flex flex-col gap-2 no-print mb-4 bg-slate-50 dark:bg-slate-700 p-3 rounded-xl border border-slate-100 dark:border-slate-600">
-                    <div class="flex gap-2">
-                        <input type="text" id="newExpTitle" placeholder="Описание" class="input-modern bg-white dark:bg-slate-800 dark:text-white border-slate-200 dark:border-slate-600 rounded-lg px-3 py-2 flex-grow text-sm">
-                        <input type="number" id="newExpCost" placeholder="Сума (EUR)" class="input-modern bg-white dark:bg-slate-800 dark:text-white border-slate-200 dark:border-slate-600 rounded-lg px-3 py-2 w-24 text-sm font-bold">
-                    </div>
-                    <div class="flex gap-2">
-                        <select id="newExpType" class="input-modern bg-white dark:bg-slate-800 dark:text-white border-slate-200 dark:border-slate-600 rounded-lg px-3 py-2 text-sm flex-grow">
-                            <option value="repair">Фонд Ремонт</option>
+            <div class="lg:col-span-2 admin-card">
+                <div class="admin-header text-sm font-bold text-slate-700">📉 ТЕКУЩИ РАЗХОДИ</div>
+                <div class="admin-body">
+                    <div class="flex gap-2 mb-4 no-print bg-gray-50 p-3 rounded border border-gray-200">
+                        <input type="text" id="newExpTitle" placeholder="Описание" class="form-input flex-grow">
+                        <input type="number" id="newExpCost" placeholder="Сума" class="form-input w-24">
+                        <select id="newExpType" class="form-input w-32">
+                            <option value="repair">Ремонт</option>
                             <option value="mowing">Косене</option>
-                            <option value="septic">Септична яма</option>
+                            <option value="septic">Яма</option>
                             <option value="complex">Комплекс</option>
                             <option value="other">Други</option>
                         </select>
-                        <button onclick="addExpense()" class="bg-slate-800 hover:bg-slate-700 text-white px-6 py-2 rounded-lg text-sm font-bold transition">OK</button>
+                        <button onclick="addExpense()" class="btn-primary">OK</button>
                     </div>
+                    <table class="w-full text-sm" id="expensesTable">
+                        <tbody class="divide-y divide-gray-100 text-gray-700"></tbody>
+                    </table>
                 </div>
-                <table class="w-full text-sm" id="expensesTable">
-                    <tbody class="divide-y divide-slate-100 dark:divide-slate-700 text-slate-700 dark:text-slate-300"></tbody>
-                </table>
             </div>
 
-            <div class="lg:col-span-1 bg-white dark:bg-slate-800 rounded-2xl p-5 shadow-sm border border-slate-200 dark:border-slate-700 print-only transition-colors">
-                <h3 class="font-bold text-sm mb-4 text-slate-800 dark:text-white uppercase flex items-center gap-2 border-b border-slate-100 dark:border-slate-700 pb-2"><i class="ri-wallet-3-fill text-emerald-500"></i> Касова Книга / Бележки</h3>
-                <textarea id="persistentInfo" placeholder="Опишете плащанията тук (напр. 'Платен чистач на 15-ти')..." class="w-full bg-slate-50 dark:bg-slate-700 dark:text-white border border-slate-200 dark:border-slate-600 rounded-xl p-3 text-sm h-48 resize-none outline-none focus:ring-2 focus:ring-blue-500/50"></textarea>
+            <div class="lg:col-span-1 admin-card print-only">
+                <div class="admin-header text-sm font-bold text-slate-700">📒 КАСОВА КНИГА</div>
+                <div class="admin-body">
+                    <textarea id="persistentInfo" placeholder="Бележки..." class="form-input h-48 resize-none"></textarea>
+                </div>
             </div>
         </div>
 
-        <div class="bg-white dark:bg-slate-800 rounded-2xl p-5 shadow-sm border border-slate-200 dark:border-slate-700 transition-colors">
-            <h3 class="font-bold text-sm mb-4 text-rose-600 uppercase flex items-center gap-2 border-b border-rose-100 dark:border-rose-900/50 pb-2">
-                <i class="ri-hammer-line"></i> СПРАВКА: РЕМОНТИ (По % Ид. Части)
-            </h3>
+        <div class="admin-card overflow-hidden">
+            <div class="admin-header text-sm font-bold text-rose-600">🛠️ СПРАВКА: РЕМОНТИ</div>
             <div class="overflow-x-auto">
-                <table class="w-full text-sm" id="repairsBreakdownTable">
-                    <thead class="bg-slate-850 text-white text-xs uppercase font-bold">
+                <table class="data-table" id="repairsBreakdownTable">
+                    <thead>
                         <tr>
-                            <th class="px-3 py-3 text-left">Ап.</th>
-                            <th class="px-3 py-3 text-left">Име</th>
-                            <th class="px-3 py-3 text-center">% Ид.Ч.</th>
-                            <th class="px-3 py-3 text-right">Дял <span class="currency-symbol text-[10px]">€</span></th>
-                            <th class="px-3 py-3 text-right bg-slate-800 rounded-t-lg">Платил (€)</th>
-                            <th class="px-3 py-3 text-right">Баланс <span class="currency-symbol text-[10px]">€</span></th>
-                            <th class="px-3 py-3 text-center no-print">Статус</th>
-                            <th class="px-3 py-3 text-left no-print">Коментар</th>
+                            <th class="w-16">Ап.</th>
+                            <th>Име</th>
+                            <th class="text-center">% Ид.Ч.</th>
+                            <th class="text-right">Дял <span class="currency-symbol text-[10px]">€</span></th>
+                            <th class="text-right bg-rose-50/50">Платил (€)</th>
+                            <th class="text-right">Баланс <span class="currency-symbol text-[10px]">€</span></th>
+                            <th class="text-center no-print">Статус</th>
+                            <th class="text-left no-print">Коментар</th>
                         </tr>
                     </thead>
-                    <tbody class="divide-y divide-slate-100 dark:divide-slate-700 text-slate-800 dark:text-slate-200"></tbody>
-                    <tfoot class="bg-slate-100 dark:bg-slate-900 font-bold text-slate-900 dark:text-white border-t-2 border-slate-300 dark:border-slate-600">
+                    <tbody class="divide-y divide-gray-100"></tbody>
+                    <tfoot class="bg-gray-50 font-bold text-slate-800 border-t border-gray-200">
                         <tr>
-                           <td colspan="3" class="px-3 py-4 text-right uppercase text-xs">ОБЩО ЗА ВХОДА:</td>
+                           <td colspan="3" class="px-3 py-4 text-right uppercase text-xs text-gray-500">ОБЩО:</td>
                            <td class="px-3 py-4 text-right" id="rep_sum_due"></td>
                            <td class="px-3 py-4 text-right" id="rep_sum_paid"></td>
                            <td class="px-3 py-4 text-right" id="rep_sum_diff"></td>
@@ -392,95 +400,73 @@
                 </table>
             </div>
         </div>
+
     </main>
 
-    <div id="settingsModal" class="hidden fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-fade-in">
-        <div class="bg-white dark:bg-slate-900 rounded-3xl w-full max-w-4xl max-h-[90vh] shadow-2xl p-0 flex flex-col overflow-hidden text-slate-800 dark:text-white">
-            <div class="p-4 border-b dark:border-slate-700 flex justify-between items-center bg-slate-50 dark:bg-slate-800">
-                <h3 class="font-bold text-lg flex items-center gap-2"><i class="ri-settings-4-fill"></i> Настройки</h3>
-                <button onclick="document.getElementById('settingsModal').classList.add('hidden')" class="text-2xl text-slate-400 hover:text-slate-600 dark:hover:text-white transition">&times;</button>
+    <nav class="bottom-nav lg:hidden no-print">
+        <a href="#" onclick="window.scrollTo({top:0, behavior:'smooth'})" class="nav-item active"><i class="ri-dashboard-line"></i>Табло</a>
+        <a href="#" onclick="calculate()" class="nav-item"><i class="ri-calculator-line"></i>Сметни</a>
+        <a href="#" onclick="saveData()" class="nav-item"><i class="ri-save-3-line"></i>Запиши</a>
+        <a href="#" onclick="generateViberMessage()" class="nav-item"><i class="ri-chat-3-line"></i>Viber</a>
+    </nav>
+
+    <div id="settingsModal" class="hidden fixed inset-0 z-[100] flex items-center justify-center bg-black/50 backdrop-blur-sm p-4 animate-in">
+        <div class="admin-card w-full max-w-4xl max-h-[90vh] flex flex-col overflow-hidden">
+            <div class="admin-header flex justify-between items-center">
+                <h3 class="font-bold text-lg text-slate-800">Настройки</h3>
+                <button onclick="document.getElementById('settingsModal').classList.add('hidden')" class="text-2xl text-gray-400 hover:text-gray-600">&times;</button>
             </div>
-            <div class="p-6 overflow-y-auto space-y-6">
-                <div class="bg-slate-50 dark:bg-slate-800 p-4 rounded-2xl border border-slate-200 dark:border-slate-700">
-                    <h4 class="font-bold text-xs uppercase text-slate-500 dark:text-slate-400 mb-2">GitHub Sync</h4>
+            <div class="p-6 overflow-y-auto space-y-6 bg-white">
+                <div class="bg-gray-50 p-4 rounded border border-gray-200">
+                    <h4 class="font-bold text-xs uppercase text-gray-500 mb-2">GitHub Sync</h4>
                     <div class="grid grid-cols-2 gap-4">
-                        <input id="gh-token" type="password" class="w-full bg-white dark:bg-slate-900 p-3 rounded-xl text-sm border dark:border-slate-600 outline-none focus:ring-2 focus:ring-blue-500/50" placeholder="Token">
-                        <input id="gh-gist" type="text" class="w-full bg-white dark:bg-slate-900 p-3 rounded-xl text-sm border dark:border-slate-600 outline-none focus:ring-2 focus:ring-blue-500/50" placeholder="Gist ID">
+                        <input id="gh-token" type="password" class="form-input" placeholder="Token">
+                        <input id="gh-gist" type="text" class="form-input" placeholder="Gist ID">
                     </div>
-                    <button onclick="saveGHCreds()" class="mt-3 text-xs bg-slate-800 hover:bg-slate-900 text-white px-4 py-2 rounded-lg font-bold transition">Save Keys</button>
+                    <button onclick="saveGHCreds()" class="mt-3 btn-secondary">Save Keys</button>
                 </div>
                 <div>
-                    <h4 class="font-bold text-xs uppercase text-slate-500 dark:text-slate-400 mb-2">Редакция на Апартаменти</h4>
-                    <div class="overflow-x-auto border dark:border-slate-700 rounded-2xl">
+                    <h4 class="font-bold text-xs uppercase text-gray-500 mb-2">Апартаменти</h4>
+                    <div class="overflow-x-auto border border-gray-200 rounded">
                         <table class="w-full text-xs text-left">
-                            <thead class="bg-slate-100 dark:bg-slate-800 uppercase font-bold text-slate-500 dark:text-slate-400"><tr><th class="p-3">Ап.</th><th class="p-3">Име</th><th class="p-3">Хора</th><th class="p-3">Гараж</th><th class="p-3">% Ид.Ч.</th></tr></thead>
-                            <tbody id="settingsResidentsTable" class="divide-y dark:divide-slate-700 bg-white dark:bg-slate-900"></tbody>
+                            <thead class="bg-gray-50 uppercase font-bold text-gray-500"><tr><th class="p-3">Ап.</th><th class="p-3">Име</th><th class="p-3">Хора</th><th class="p-3">Гараж</th><th class="p-3">% Ид.Ч.</th></tr></thead>
+                            <tbody id="settingsResidentsTable" class="divide-y divide-gray-100 bg-white"></tbody>
                         </table>
                     </div>
                 </div>
             </div>
-            <div class="p-4 border-t dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-right">
-                <button onclick="saveSettingsAndReload()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-6 py-2 rounded-xl font-bold transition shadow-lg shadow-emerald-500/20">Запази Промените</button>
+            <div class="p-4 border-t border-gray-200 bg-gray-50 text-right">
+                <button onclick="saveSettingsAndReload()" class="btn-primary">Запази Промените</button>
             </div>
         </div>
     </div>
 
-    <div id="bulkPayModal" class="hidden fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
-        <div class="bg-white dark:bg-slate-900 rounded-3xl w-full max-w-md shadow-2xl p-6 text-slate-800 dark:text-white">
-            <h3 class="font-bold text-lg mb-2">Масово Плащане</h3>
-            <p class="text-sm text-slate-500 dark:text-slate-400 mb-4">Ще маркирате <span id="bulkCountDisplay" class="font-bold text-slate-900 dark:text-white">0</span> сметки като ПЛАТЕНИ.</p>
-            <input type="text" id="bulkPayComment" class="w-full border dark:border-slate-600 dark:bg-slate-800 p-3 rounded-xl mb-4 outline-none focus:ring-2 focus:ring-blue-500/50" placeholder="Бележка (напр. 'Банков превод')...">
+    <div id="bulkPayModal" class="hidden fixed inset-0 z-[100] flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
+        <div class="admin-card w-full max-w-md p-6">
+            <h3 class="font-bold text-lg mb-2 text-slate-800">Масово Плащане</h3>
+            <p class="text-sm text-gray-500 mb-4">Ще маркирате <span id="bulkCountDisplay" class="font-bold text-slate-900">0</span> сметки като ПЛАТЕНИ.</p>
+            <input type="text" id="bulkPayComment" class="form-input mb-4" placeholder="Бележка (напр. 'Банков превод')...">
             <div class="flex gap-2">
-                <button onclick="document.getElementById('bulkPayModal').classList.add('hidden')" class="flex-1 py-3 rounded-xl border dark:border-slate-600 font-bold hover:bg-slate-50 dark:hover:bg-slate-800 transition">Отказ</button>
-                <button onclick="executeBulkPay()" class="flex-1 py-3 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold transition shadow-lg shadow-blue-500/30">Потвърди</button>
+                <button onclick="document.getElementById('bulkPayModal').classList.add('hidden')" class="btn-secondary flex-1">Отказ</button>
+                <button onclick="executeBulkPay()" class="btn-primary flex-1">Потвърди</button>
             </div>
         </div>
     </div>
 
-    <div id="reportModal" class="hidden fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
-        <div class="bg-white dark:bg-slate-900 rounded-3xl w-full max-w-5xl h-[85vh] shadow-2xl flex flex-col text-slate-800 dark:text-white">
-            <div class="p-4 border-b border-slate-100 dark:border-slate-700 flex justify-between items-center bg-slate-50 dark:bg-slate-800 rounded-t-3xl">
-                <h3 class="font-bold text-lg flex items-center gap-2"><i class="ri-file-text-line text-blue-500"></i> Детайлен Отчет</h3>
-                <button onclick="document.getElementById('reportModal').classList.add('hidden')" class="w-8 h-8 flex items-center justify-center rounded-full hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-400 text-xl transition">&times;</button>
+    <div id="reportModal" class="hidden fixed inset-0 z-[100] flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
+        <div class="admin-card w-full max-w-5xl h-[85vh] flex flex-col">
+            <div class="admin-header flex justify-between items-center">
+                <h3 class="font-bold text-lg text-slate-800">Детайлен Отчет</h3>
+                <button onclick="document.getElementById('reportModal').classList.add('hidden')" class="text-2xl text-gray-400 hover:text-gray-600">&times;</button>
             </div>
-            <textarea id="reportText" class="w-full h-full p-6 bg-slate-50 dark:bg-slate-950 dark:text-slate-300 text-sm font-mono resize-none focus:outline-none leading-relaxed text-slate-700" readonly></textarea>
-            <div class="p-4 border-t border-slate-100 dark:border-slate-700 bg-white dark:bg-slate-900 rounded-b-3xl">
-                <button onclick="copyReportText()" class="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-xl font-bold transition shadow-lg shadow-blue-500/20 flex items-center justify-center gap-2"><i class="ri-file-copy-line"></i> Копирай Текста</button>
+            <textarea id="reportText" class="w-full h-full p-6 bg-gray-50 text-sm font-mono resize-none focus:outline-none text-slate-700" readonly></textarea>
+            <div class="p-4 border-t border-gray-200 bg-white">
+                <button onclick="copyReportText()" class="w-full btn-primary py-3">Копирай Текста</button>
             </div>
         </div>
     </div>
 
     <script>
-        // --- Dark Mode Logic ---
-        function toggleTheme() {
-            const html = document.documentElement;
-            const icon = document.getElementById('theme-icon');
-            if (html.classList.contains('dark')) {
-                html.classList.remove('dark');
-                localStorage.setItem('theme', 'light');
-                icon.className = 'ri-sun-line text-lg';
-            } else {
-                html.classList.add('dark');
-                localStorage.setItem('theme', 'dark');
-                icon.className = 'ri-moon-line text-lg';
-            }
-        }
-
-        (function() {
-            const savedTheme = localStorage.getItem('theme');
-            if (savedTheme === 'dark' || (!savedTheme && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-                document.documentElement.classList.add('dark');
-            } else {
-                document.documentElement.classList.remove('dark');
-            }
-        })();
-        
-        window.addEventListener('load', () => {
-             const icon = document.getElementById('theme-icon');
-             if(document.documentElement.classList.contains('dark')) { icon.className = 'ri-moon-line text-lg'; } 
-             else { icon.className = 'ri-sun-line text-lg'; }
-        });
-
         // Default Data
         const defaultApartments = [
             { name: "1.1", names: "Стефан Дечков", parts: 5.406, people: 2, garage: 1 },
@@ -507,7 +493,7 @@
         let billStatus = {}; 
         let currentYear = new Date().getFullYear();
         let currentMonth = new Date().getMonth() + 1;
-        const EUR_RATE = 1.95583; // Fixed Rate
+        const EUR_RATE = 1.95583; 
         const GH_KEY = 'Condo_GH_Creds';
         const CONFIG_KEY = 'Condo_Config_V1';
         const currencyInputs = ['c_tok_vhod', 'c_tok_lift', 'c_tok_abonatna', 'c_lift_month', 'c_lift_conn', 'c_lift_tech', 'c_clean_vhod', 'c_tok_garaj', 'c_clean_garaj', 'c_mowing', 'c_septic', 'c_clean_complex', 'c_repair', 'bal_repair_start', 'bal_mowing_start', 'bal_septic_start', 'bal_complex_start', 'newExpCost'];
@@ -515,11 +501,6 @@
         let selectedApts = new Set();
 
         window.onload = function() {
-            // Re-apply theme icon check on full load
-            const icon = document.getElementById('theme-icon');
-            if(document.documentElement.classList.contains('dark')) { icon.className = 'ri-moon-line text-lg'; } 
-            else { icon.className = 'ri-sun-line text-lg'; }
-
             const savedConfig = localStorage.getItem(CONFIG_KEY);
             if(savedConfig) appConfig = JSON.parse(savedConfig);
 
@@ -547,10 +528,10 @@
                 const btn = document.getElementById('btn_paid_' + id);
                 if (btn) {
                     if (billStatus[id]) {
-                        btn.className = "bill-btn bill-btn-paid w-7 h-7 flex items-center justify-center rounded-lg";
+                        btn.className = "btn-icon btn-icon-paid";
                         btn.innerHTML = '<i class="ri-check-double-line"></i>';
                     } else {
-                        btn.className = "bill-btn bill-btn-unpaid w-7 h-7 flex items-center justify-center rounded-lg";
+                        btn.className = "btn-icon btn-icon-unpaid";
                         btn.innerHTML = '<i class="ri-check-line"></i>';
                     }
                 }
@@ -627,7 +608,7 @@
         function val(id) { return parseFloat(document.getElementById(id).value)||0; }
         function valEl(el) { return parseFloat(el.value)||0; }
         function updateMonthlyHints() { document.getElementById('hint_conn').innerText = `(${ (val('c_lift_conn')/12).toFixed(2) }/м)`; document.getElementById('hint_tech').innerText = `(${ (val('c_lift_tech')/12).toFixed(2) }/м)`; }
-        function renderDatePicker() { document.getElementById('displayYear').innerText = currentYear; document.getElementById('printDateLabel').innerText = `Период: ${currentYear}-${currentMonth}`; const grid = document.getElementById('monthsGrid'); grid.innerHTML = ''; ["Яну", "Фев", "Мар", "Апр", "Май", "Юни", "Юли", "Авг", "Сеп", "Окт", "Ное", "Дек"].forEach((name, index) => { const btn = document.createElement('button'); btn.className = `p-2 rounded-lg text-sm font-bold transition ${index + 1 === currentMonth ? 'bg-blue-600 text-white shadow-md' : 'bg-slate-50 dark:bg-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-600'}`; btn.innerText = name; btn.onclick = () => { currentMonth = index + 1; updateHiddenInput(); renderDatePicker(); loadData(); }; grid.appendChild(btn); }); }
+        function renderDatePicker() { document.getElementById('displayYear').innerText = currentYear; document.getElementById('printDateLabel').innerText = `Период: ${currentYear}-${currentMonth}`; const grid = document.getElementById('monthsGrid'); grid.innerHTML = ''; ["Яну", "Фев", "Мар", "Апр", "Май", "Юни", "Юли", "Авг", "Сеп", "Окт", "Ное", "Дек"].forEach((name, index) => { const btn = document.createElement('button'); btn.className = `p-2 rounded-lg text-sm font-bold transition ${index + 1 === currentMonth ? 'bg-brand-600 text-white shadow-md' : 'bg-white text-gray-600 border border-gray-200 hover:bg-gray-50'}`; btn.innerText = name; btn.onclick = () => { currentMonth = index + 1; updateHiddenInput(); renderDatePicker(); loadData(); }; grid.appendChild(btn); }); }
         function changeYear(d) { currentYear += d; updateHiddenInput(); renderDatePicker(); loadData(); }
         function updateHiddenInput() { document.getElementById('reportDate').value = `${currentYear}-${String(currentMonth).padStart(2, '0')}`; }
         
@@ -636,38 +617,40 @@
             
             appConfig.apartments.forEach((fixedApt) => {
                 let savedApt = savedData ? savedData.find(s => s.name === fixedApt.name) : null; const ownerNames = savedApt ? (savedApt.names || fixedApt.names) : fixedApt.names; const people = savedApt ? savedApt.people : fixedApt.people; const garageCells = savedApt ? savedApt.garageCells : fixedApt.garage; const oldDebt = (savedApt ? savedApt.oldDebt : 0); const evCost = (savedApt ? (savedApt.evCost || 0) : 0); const status = savedApt ? savedApt.status : 'unpaid'; const comment = savedApt ? savedApt.comment : '';
-                const tr = document.createElement('tr'); tr.className = status === 'paid' ? "bg-emerald-50/50 dark:bg-emerald-900/20" : "";
-                
+                const tr = document.createElement('tr'); 
+                if(status === 'paid') tr.classList.add('bg-brand-50/30');
                 if(selectedApts.has(fixedApt.name)) tr.classList.add('row-selected');
 
                 tr.innerHTML = `
-                    <td class="px-2 py-3 text-center bg-white dark:bg-slate-900 border-r border-slate-100 dark:border-slate-800 no-print sticky-col-check">
+                    <td class="sticky-check w-10 text-center no-print">
                         <input type="checkbox" class="custom-checkbox row-checkbox" value="${fixedApt.name}" ${selectedApts.has(fixedApt.name)?'checked':''} onchange="toggleRow('${fixedApt.name}')">
                     </td>
-                    <td class="px-3 py-3 sticky-col-apt bg-white dark:bg-slate-900 border-r border-slate-200 dark:border-slate-700"><button onclick="generateReport('${fixedApt.name}')" class="font-bold text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/30 px-3 py-1.5 rounded-lg text-xs w-full transition no-print border border-transparent hover:border-blue-100 dark:hover:border-blue-800">${fixedApt.name}</button><span class="hidden print-only font-bold">${fixedApt.name}</span><input type="hidden" class="apt-fixed" value="${fixedApt.name}"></td>
-                    <td class="px-3 py-3"><input type="text" class="inp-names w-full bg-transparent text-xs text-slate-700 dark:text-slate-200 font-medium input-modern px-1 rounded" value="${ownerNames}"></td>
-                    <td class="px-2 py-3"><input type="number" class="apt-fixed-input inp-people w-10 bg-slate-50 dark:bg-slate-800 border border-slate-100 dark:border-slate-700 rounded text-center text-xs p-1 mx-auto block font-bold dark:text-white" value="${people}"></td>
-                    <td class="px-2 py-3"><input type="number" class="apt-fixed-input inp-garage w-10 bg-slate-50 dark:bg-slate-800 border border-slate-100 dark:border-slate-700 rounded text-center text-xs p-1 mx-auto block font-bold dark:text-white" value="${garageCells}"></td>
-                    <td class="px-2 py-3"><input type="number" class="inp-ev w-16 bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 font-medium rounded text-center text-xs p-1 border border-blue-100 dark:border-blue-800 font-bold mx-auto block input-modern" value="${evCost.toFixed(2)}"></td>
+                    <td class="sticky-apt px-3 py-2 text-center font-bold text-slate-700 w-16">
+                        <button onclick="generateReport('${fixedApt.name}')" class="hover:text-brand-600 transition">${fixedApt.name}</button>
+                        <input type="hidden" class="apt-fixed" value="${fixedApt.name}">
+                    </td>
+                    <td><input type="text" class="form-input inp-names w-full" value="${ownerNames}"></td>
+                    <td class="text-center"><input type="number" class="form-input apt-fixed-input inp-people w-12 text-center" value="${people}"></td>
+                    <td class="text-center"><input type="number" class="form-input apt-fixed-input inp-garage w-12 text-center" value="${garageCells}"></td>
+                    <td class="text-center"><input type="number" class="form-input inp-ev w-16 text-center" value="${evCost.toFixed(2)}"></td>
                     <input type="hidden" class="inp-parts" value="${fixedApt.parts}">
-                    <td class="px-3 py-3 text-right text-xs font-medium text-slate-500 dark:text-slate-400 res-current">0</td>
+                    <td class="text-right font-medium text-slate-500 res-current">0</td>
                     <input type="hidden" class="res-current-val" value="0">
-                    <td class="px-3 py-3"><input type="number" class="inp-old-debt w-20 text-right text-rose-500 font-bold bg-transparent text-xs input-modern px-1 rounded" value="${oldDebt.toFixed(2)}"></td>
-                    <td class="px-3 py-3 text-right font-black text-slate-800 dark:text-white text-sm res-grand-total">0</td>
+                    <td class="text-right"><input type="number" class="form-input inp-old-debt w-20 text-right text-rose-600 font-bold" value="${oldDebt.toFixed(2)}"></td>
+                    <td class="text-right font-black text-slate-800 res-grand-total">0</td>
                     <input type="hidden" class="res-grand-total-val" value="0">
-                    <td class="px-3 py-3 text-center no-print"><select class="status-select text-xs w-full text-center rounded-lg px-2 py-1.5 cursor-pointer transition border-0 ring-1 ring-slate-200 dark:ring-slate-700 shadow-sm font-bold ${status==='paid'?'badge-paid':'badge-unpaid'}" onchange="changeStatus(this)"><option value="unpaid">НЕПЛАТЕНО</option><option value="paid" ${status==='paid'?'selected':''}>ПЛАТЕНО</option></select></td>
-                    <td class="px-3 py-3 no-print"><input type="text" class="inp-comment w-full bg-transparent text-xs text-slate-400 italic input-modern px-1 rounded" value="${comment}" placeholder="..."></td>`;
+                    <td class="text-center no-print"><select class="form-input text-xs font-bold text-center uppercase cursor-pointer ${status==='paid'?'text-emerald-700 bg-emerald-50 border-emerald-200':'text-rose-700 bg-rose-50 border-rose-200'} status-select" onchange="changeStatus(this)"><option value="unpaid" ${status==='unpaid'?'selected':''}>НЕПЛАТЕНО</option><option value="paid" ${status==='paid'?'selected':''}>ПЛАТЕНО</option></select></td>
+                    <td class="no-print"><input type="text" class="form-input inp-comment w-full text-xs text-gray-500 italic" value="${comment}" placeholder="..."></td>`;
                 tbody.appendChild(tr);
             });
             calculate();
         }
 
-        function changeStatus(sel) { const row = sel.closest('tr'); if(sel.value === 'paid') { row.classList.add('bg-emerald-50/50', 'dark:bg-emerald-900/20'); sel.className = "status-select text-xs w-full text-center rounded-lg px-2 py-1.5 cursor-pointer transition border-0 ring-1 ring-emerald-200 dark:ring-emerald-800 shadow-sm font-bold badge-paid"; } else { row.classList.remove('bg-emerald-50/50', 'dark:bg-emerald-900/20'); sel.className = "status-select text-xs w-full text-center rounded-lg px-2 py-1.5 cursor-pointer transition border-0 ring-1 ring-red-200 dark:ring-red-900 shadow-sm font-bold badge-unpaid"; } }
+        function changeStatus(sel) { const row = sel.closest('tr'); if(sel.value === 'paid') { row.classList.add('bg-brand-50/30'); sel.className = "form-input text-xs font-bold text-center uppercase cursor-pointer text-emerald-700 bg-emerald-50 border-emerald-200 status-select"; } else { row.classList.remove('bg-brand-50/30'); sel.className = "form-input text-xs font-bold text-center uppercase cursor-pointer text-rose-700 bg-rose-50 border-rose-200 status-select"; } }
         
-        // Helper to format Money
         function formatMoney(eur) {
             const bgn = eur * EUR_RATE;
-            return `${eur.toFixed(2)} € <span class="text-[10px] text-slate-400 font-normal">(${bgn.toFixed(2)} лв.)</span>`;
+            return `${eur.toFixed(2)} € <span class="text-[10px] text-gray-400 font-normal">(${bgn.toFixed(2)} лв.)</span>`;
         }
 
         function formatMoneyWhite(eur) {
@@ -682,7 +665,6 @@
             const priceGarageCell = totalGarageCells>0?costGarage/totalGarageCells:0; const pricePerPersonCommon = totalPeople>0?costCommon/totalPeople:0; const pricePerPersonMaint = totalPeople>0?costMaintenance/totalPeople:0; const priceRepairPart = totalParts>0?costRepairs/totalParts:0;
             let G_Grand = 0; 
             
-            // Accumulate collected sums
             let sumRepair = 0;
             let sumMowing = 0;
             let sumSeptic = 0;
@@ -690,7 +672,6 @@
 
             document.querySelectorAll('#mainTable tbody tr').forEach(row => { const aptName = row.querySelector('.apt-fixed').value; const people = parseFloat(row.querySelector('.inp-people').value)||0; const garage = parseFloat(row.querySelector('.inp-garage').value)||0; const parts = parseFloat(row.querySelector('.inp-parts').value)||0; const debt = valEl(row.querySelector('.inp-old-debt')); const evCost = valEl(row.querySelector('.inp-ev')); const isPaid = row.querySelector('.status-select').value === 'paid'; let oweBase = 0; if(aptName !== '1.3') oweBase = (people * pricePerPersonCommon) + (people * pricePerPersonMaint) + (parts * priceRepairPart); const oweGarage = garage * priceGarageCell; const currentTotal = oweBase + oweGarage + evCost; const grandTotal = currentTotal + debt; 
             
-            // Render HTML with small BGN
             row.querySelector('.res-current').innerHTML = formatMoney(currentTotal); 
             row.querySelector('.res-current-val').value = currentTotal;
             row.querySelector('.res-grand-total').innerHTML = formatMoney(grandTotal); 
@@ -711,13 +692,11 @@
             document.getElementById('sum-grand').innerHTML = formatMoney(G_Grand);
             updateCollectionReport();
             
-            // Update Funds ONCE at the end with the correct sums
             updateFundBalance('repair', sumRepair);
             updateFundBalance('mowing', sumMowing);
             updateFundBalance('septic', sumSeptic);
             updateFundBalance('complex', sumComplex);
 
-            // Update Total Cash (Sum of Start + Collected, IGNORING EXPENSES)
             const totalCash = (val('bal_repair_start') + val('disp_repair_col_val')) + 
                               (val('bal_mowing_start') + val('disp_mowing_col_val')) + 
                               (val('bal_septic_start') + val('disp_septic_col_val')) + 
@@ -735,7 +714,7 @@
             document.querySelectorAll('#mainTable tbody tr').forEach(row => { const aptName = row.querySelector('.apt-fixed').value; const people = parseFloat(row.querySelector('.inp-people').value)||0; const garage = parseFloat(row.querySelector('.inp-garage').value)||0; const parts = parseFloat(row.querySelector('.inp-parts').value)||0; const ev = valEl(row.querySelector('.inp-ev')); const isPaid = row.querySelector('.status-select').value === 'paid'; if(aptName !== '1.3') { dueCommon += people * priceCommon; dueRepair += parts * priceRepair; dueMowing += people * priceMowing; dueSeptic += people * priceSeptic; dueComplex += people * priceComplex; } dueGarage += garage * priceGarageCell; dueEV += ev; if(isPaid) { if(aptName !== '1.3') { paidCommon += people * priceCommon; paidRepair += parts * priceRepair; paidMowing += people * priceMowing; paidSeptic += people * priceSeptic; paidComplex += people * priceComplex; } paidGarage += garage * priceGarageCell; paidEV += ev; } });
             const rows = [ { label: 'Общи (Ток/Ас/Чист)', due: dueCommon, paid: paidCommon }, { label: 'Гараж (Ток/Поч)', due: dueGarage, paid: paidGarage }, { label: 'Ел. Коли (Извънредно)', due: dueEV, paid: paidEV }, { label: 'Фонд Ремонт', due: dueRepair, paid: paidRepair }, { label: 'Фонд Косене', due: dueMowing, paid: paidMowing }, { label: 'Септична яма', due: dueSeptic, paid: paidSeptic }, { label: 'Поч. Комплекс', due: dueComplex, paid: paidComplex }, ];
             const tbody = document.getElementById('collectionReportBody'); tbody.innerHTML = '';
-            rows.forEach(r => { const diff = r.paid - r.due; const diffClass = diff < -0.01 ? 'text-rose-600 dark:text-rose-400 font-bold' : 'text-emerald-600 dark:text-emerald-400 font-bold'; const sign = diff > 0 ? '+' : ''; tbody.innerHTML += `<tr class="border-b border-slate-50 dark:border-slate-800 last:border-0 hover:bg-slate-50 dark:hover:bg-slate-800"><td class="px-4 py-3 text-slate-700 dark:text-slate-300 font-medium">${r.label}</td><td class="px-4 py-3 text-right text-slate-500 dark:text-slate-400">${(r.due).toFixed(2)} ${sym}</td><td class="px-4 py-3 text-right text-slate-800 dark:text-white font-bold">${(r.paid).toFixed(2)} ${sym}</td><td class="px-4 py-3 text-right ${diffClass}">${sign}${(diff).toFixed(2)} ${sym}</td></tr>`; });
+            rows.forEach(r => { const diff = r.paid - r.due; const diffClass = diff < -0.01 ? 'text-rose-600 font-bold' : 'text-emerald-600 font-bold'; const sign = diff > 0 ? '+' : ''; tbody.innerHTML += `<tr class="hover:bg-gray-50"><td class="px-4 py-3 text-slate-700 font-medium">${r.label}</td><td class="px-4 py-3 text-right text-slate-500">${(r.due).toFixed(2)} ${sym}</td><td class="px-4 py-3 text-right text-slate-800 font-bold">${(r.paid).toFixed(2)} ${sym}</td><td class="px-4 py-3 text-right ${diffClass}">${sign}${(diff).toFixed(2)} ${sym}</td></tr>`; });
         }
 
         function updateFundBalance(type, collectedReal) { 
@@ -764,16 +743,12 @@
 
         function addExpense() { const title = document.getElementById('newExpTitle').value; const cost = val('newExpCost'); const type = document.getElementById('newExpType').value; if(!title || isNaN(cost)) return; expenses.push({title, cost, type}); document.getElementById('newExpTitle').value = ''; document.getElementById('newExpCost').value = ''; renderExpenses(); calculate(); refreshRepairsTable(); }
         function removeExpense(idx) { expenses.splice(idx,1); renderExpenses(); calculate(); refreshRepairsTable(); }
-        function renderExpenses() { const tb = document.querySelector('#expensesTable tbody'); tb.innerHTML = ''; expenses.forEach((e,i) => { tb.innerHTML += `<tr class="border-b border-slate-50 dark:border-slate-800"><td class="py-2 text-slate-700 dark:text-slate-300">${e.title}</td><td class="text-xs text-slate-400">${e.type}</td><td class="text-right font-bold text-slate-800 dark:text-white">${(e.cost).toFixed(2)} €</td><td class="text-right no-print"><button onclick="removeExpense(${i})" class="text-rose-400 hover:text-rose-500">&times;</button></td></tr>`; }); }
+        function renderExpenses() { const tb = document.querySelector('#expensesTable tbody'); tb.innerHTML = ''; expenses.forEach((e,i) => { tb.innerHTML += `<tr class="hover:bg-gray-50"><td class="py-2 text-slate-700">${e.title}</td><td class="text-xs text-slate-400">${e.type}</td><td class="text-right font-bold text-slate-800">${(e.cost).toFixed(2)} €</td><td class="text-right no-print"><button onclick="removeExpense(${i})" class="text-rose-400 hover:text-rose-600">&times;</button></td></tr>`; }); }
         function refreshRepairsTable() { const totalRepairExpenses = expenses.filter(e => e.type === 'repair').reduce((sum, e) => sum + e.cost, 0); const savedString = localStorage.getItem(`condo_${document.getElementById('reportDate').value}`); let savedData = savedString ? JSON.parse(savedString).rows : null; renderRepairsBreakdown(totalRepairExpenses, savedData); }
         
-        // --- MODIFIED REPAIRS RENDER ---
         function renderRepairsBreakdown(totalRepairExpenses, savedData) { 
             const tbody = document.querySelector('#repairsBreakdownTable tbody'); tbody.innerHTML = ''; let totalParts = 0; appConfig.apartments.forEach(a => totalParts += a.parts); 
-            
-            // Vars for footer totals
-            let sumShare = 0;
-            let sumPaid = 0;
+            let sumShare = 0; let sumPaid = 0;
 
             appConfig.apartments.forEach((apt) => { 
                 const share = (totalRepairExpenses * apt.parts) / totalParts; 
@@ -787,56 +762,36 @@
                         if(savedRow.repairName) savedName = savedRow.repairName;
                     }
                 } 
-                const diff = share - paidSoFar; let colorClass = diff > 0.01 ? 'text-rose-500' : 'text-emerald-500 dark:text-emerald-400'; 
-                
-                // Accumulate Totals
-                sumShare += share;
-                sumPaid += paidSoFar;
+                const diff = share - paidSoFar; let colorClass = diff > 0.01 ? 'text-rose-500' : 'text-emerald-500'; 
+                sumShare += share; sumPaid += paidSoFar;
 
-                // Color logic for dropdown
-                let statusColorClass = 'status-unpaid';
-                if(savedRepairStatus === 'paid') statusColorClass = 'status-paid';
-                if(savedRepairStatus === 'partial') statusColorClass = 'status-partial';
-
-                let selectClass = `repair-status-select rounded text-xs py-1 px-1 w-full font-bold ${statusColorClass}`; 
-                
                 tbody.innerHTML += `<tr>
-                    <td class="px-3 py-3 font-bold text-slate-700 dark:text-slate-200">${apt.name}</td>
-                    <td class="px-3 py-3"><input type="text" class="inp-repair-name w-full bg-transparent text-xs text-slate-700 dark:text-slate-200 font-medium input-modern px-1 rounded" value="${savedName}" onchange="saveData(true)"></td>
-                    <td class="px-3 py-3 text-center text-slate-500 dark:text-slate-400">${apt.parts}%</td>
-                    <td class="px-3 py-3 text-right">${(share).toFixed(2)} €</td>
-                    <td class="px-3 py-3 text-right"><input type="number" class="inp-repair-paid w-20 text-right bg-slate-50 dark:bg-slate-800 dark:text-white rounded p-1 text-xs input-modern font-bold" value="${(paidSoFar).toFixed(2)}" onchange="saveData(true); refreshRepairsTable()"></td>
-                    <td class="px-3 py-3 text-right font-bold ${colorClass}">${(diff).toFixed(2)} €</td>
-                    <td class="px-3 py-3 text-center no-print">
-                        <select class="${selectClass}" onchange="updateRepairStatus(this)">
+                    <td class="font-bold text-slate-700">${apt.name}</td>
+                    <td><input type="text" class="form-input text-xs w-full" value="${savedName}" onchange="saveData(true)"></td>
+                    <td class="text-center text-slate-500 text-xs">${apt.parts}%</td>
+                    <td class="text-right text-xs">${(share).toFixed(2)} €</td>
+                    <td class="text-right"><input type="number" class="form-input w-20 text-right text-xs font-bold" value="${(paidSoFar).toFixed(2)}" onchange="saveData(true); refreshRepairsTable()"></td>
+                    <td class="text-right font-bold text-xs ${colorClass}">${(diff).toFixed(2)} €</td>
+                    <td class="text-center no-print">
+                        <select class="form-input text-[10px] font-bold uppercase cursor-pointer ${savedRepairStatus==='paid'?'text-emerald-700 bg-emerald-50 border-emerald-200':(savedRepairStatus==='partial'?'text-amber-700 bg-amber-50 border-amber-200':'text-rose-700 bg-rose-50 border-rose-200')}" onchange="updateRepairStatus(this)">
                             <option value="unpaid" ${savedRepairStatus==='unpaid'?'selected':''}>НЕПЛАТЕНО</option>
                             <option value="partial" ${savedRepairStatus==='partial'?'selected':''}>ЧАСТИЧНО</option>
                             <option value="paid" ${savedRepairStatus==='paid'?'selected':''}>ПЛАТЕНО</option>
                         </select>
                     </td>
-                    <td class="px-3 py-3 no-print"><input type="text" class="inp-repair-note w-full bg-slate-50 dark:bg-slate-800 dark:text-slate-300 rounded px-2 py-1 text-xs input-modern" value="${savedNote}" placeholder="..." onchange="saveData(true)"></td>
+                    <td class="no-print"><input type="text" class="form-input w-full text-xs text-gray-500 italic" value="${savedNote}" placeholder="..." onchange="saveData(true)"></td>
                 </tr>`; 
             }); 
 
-            // Render Footer Totals
             const sumDiff = sumShare - sumPaid;
-            let diffColor = sumDiff > 0.01 ? 'text-rose-600 dark:text-rose-400' : 'text-emerald-600 dark:text-emerald-400';
-            
+            let diffColor = sumDiff > 0.01 ? 'text-rose-600' : 'text-emerald-600';
             document.getElementById('rep_sum_due').innerHTML = formatMoney(sumShare);
             document.getElementById('rep_sum_paid').innerHTML = formatMoney(sumPaid);
             document.getElementById('rep_sum_diff').innerHTML = formatMoney(sumDiff);
             document.getElementById('rep_sum_diff').className = `px-3 py-4 text-right font-black ${diffColor}`;
         }
 
-        function updateRepairStatus(sel) { 
-            // Update Color immediately
-            if(sel.value === 'paid') sel.className = "repair-status-select rounded text-xs py-1 px-1 w-full font-bold status-paid";
-            else if(sel.value === 'partial') sel.className = "repair-status-select rounded text-xs py-1 px-1 w-full font-bold status-partial";
-            else sel.className = "repair-status-select rounded text-xs py-1 px-1 w-full font-bold status-unpaid";
-            
-            saveData(true); 
-            refreshRepairsTable(); 
-        }
+        function updateRepairStatus(sel) { saveData(true); refreshRepairsTable(); }
 
         function saveData(silent = false) { 
             const rows = []; 
@@ -951,7 +906,7 @@
                 if(c.checked) tr.classList.add('row-selected');
                 else tr.classList.remove('row-selected');
             });
-            if(selectedApts.size > 0) { b.classList.remove('hidden'); } else { b.classList.add('hidden'); document.getElementById('selectAllCheckbox').checked = false; } 
+            if(selectedApts.size > 0) { b.classList.remove('hidden'); b.classList.add('flex'); } else { b.classList.add('hidden'); b.classList.remove('flex'); document.getElementById('selectAllCheckbox').checked = false; } 
         }
         function openBulkPayModal() { document.getElementById('bulkCountDisplay').innerText = selectedApts.size; document.getElementById('bulkPayComment').value = ""; document.getElementById('bulkPayModal').classList.remove('hidden'); }
         function executeBulkPay() {
@@ -974,7 +929,7 @@
         function openSettings() {
             const tb = document.getElementById('settingsResidentsTable'); tb.innerHTML = '';
             appConfig.apartments.forEach((a, i) => {
-                tb.innerHTML += `<tr><td class="p-2 font-bold">${a.name}</td><td class="p-2"><input type="text" value="${a.names}" class="border rounded-lg dark:border-slate-600 dark:bg-slate-700 w-full px-2 py-1 text-xs" onchange="editApt(${i},'names',this.value)"></td><td class="p-2"><input type="number" value="${a.people}" class="border rounded-lg dark:border-slate-600 dark:bg-slate-700 w-12 text-center text-xs p-1" onchange="editApt(${i},'people',this.value)"></td><td class="p-2"><input type="number" value="${a.garage}" class="border rounded-lg dark:border-slate-600 dark:bg-slate-700 w-12 text-center text-xs p-1" onchange="editApt(${i},'garage',this.value)"></td><td class="p-2"><input type="number" value="${a.parts}" class="border rounded-lg dark:border-slate-600 dark:bg-slate-700 w-16 text-center text-xs p-1" onchange="editApt(${i},'parts',this.value)"></td></tr>`;
+                tb.innerHTML += `<tr><td class="p-2 font-bold">${a.name}</td><td class="p-2"><input type="text" value="${a.names}" class="form-input text-xs w-full" onchange="editApt(${i},'names',this.value)"></td><td class="p-2"><input type="number" value="${a.people}" class="form-input w-12 text-center text-xs" onchange="editApt(${i},'people',this.value)"></td><td class="p-2"><input type="number" value="${a.garage}" class="form-input w-12 text-center text-xs" onchange="editApt(${i},'garage',this.value)"></td><td class="p-2"><input type="number" value="${a.parts}" class="form-input w-16 text-center text-xs" onchange="editApt(${i},'parts',this.value)"></td></tr>`;
             });
             document.getElementById('settingsModal').classList.remove('hidden');
         }
