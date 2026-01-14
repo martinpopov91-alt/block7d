@@ -303,9 +303,9 @@
                             <th class="text-center">Хора</th>
                             <th class="text-center">Гараж</th>
                             <th class="text-center">EV</th>
-                            <th class="text-right">Сметка</th>
-                            <th class="text-right text-rose-500">Стари</th>
-                            <th class="text-right">ОБЩО</th>
+                            <th class="text-right">Сметка (€)</th>
+                            <th class="text-right text-rose-500">Стари (€)</th>
+                            <th class="text-right">ОБЩО (€)</th>
                             <th class="text-center no-print">Статус</th>
                             <th class="no-print">Коментар</th>
                         </tr>
@@ -662,6 +662,7 @@
 
         function changeStatus(sel) { const row = sel.closest('tr'); if(sel.value === 'paid') { row.classList.add('bg-brand-50/30'); sel.className = "form-input text-xs font-bold text-center uppercase cursor-pointer text-emerald-700 bg-emerald-50 border-emerald-200 status-select"; } else { row.classList.remove('bg-brand-50/30'); sel.className = "form-input text-xs font-bold text-center uppercase cursor-pointer text-rose-700 bg-rose-50 border-rose-200 status-select"; } }
         
+        // Helper to format Money
         function formatMoney(eur) {
             const bgn = eur * EUR_RATE;
             return `${eur.toFixed(2)} € <span class="text-[10px] text-gray-400 font-normal">(${bgn.toFixed(2)} лв.)</span>`;
@@ -679,6 +680,7 @@
             const priceGarageCell = totalGarageCells>0?costGarage/totalGarageCells:0; const pricePerPersonCommon = totalPeople>0?costCommon/totalPeople:0; const pricePerPersonMaint = totalPeople>0?costMaintenance/totalPeople:0; const priceRepairPart = totalParts>0?costRepairs/totalParts:0;
             let G_Grand = 0; 
             
+            // Accumulate collected sums
             let sumRepair = 0;
             let sumMowing = 0;
             let sumSeptic = 0;
@@ -686,6 +688,7 @@
 
             document.querySelectorAll('#mainTable tbody tr').forEach(row => { const aptName = row.querySelector('.apt-fixed').value; const people = parseFloat(row.querySelector('.inp-people').value)||0; const garage = parseFloat(row.querySelector('.inp-garage').value)||0; const parts = parseFloat(row.querySelector('.inp-parts').value)||0; const debt = valEl(row.querySelector('.inp-old-debt')); const evCost = valEl(row.querySelector('.inp-ev')); const isPaid = row.querySelector('.status-select').value === 'paid'; let oweBase = 0; if(aptName !== '1.3') oweBase = (people * pricePerPersonCommon) + (people * pricePerPersonMaint) + (parts * priceRepairPart); const oweGarage = garage * priceGarageCell; const currentTotal = oweBase + oweGarage + evCost; const grandTotal = currentTotal + debt; 
             
+            // Render HTML with small BGN
             row.querySelector('.res-current').innerHTML = formatMoney(currentTotal); 
             row.querySelector('.res-current-val').value = currentTotal;
             row.querySelector('.res-grand-total').innerHTML = formatMoney(grandTotal); 
@@ -706,11 +709,13 @@
             document.getElementById('sum-grand').innerHTML = formatMoney(G_Grand);
             updateCollectionReport();
             
+            // Update Funds ONCE at the end with the correct sums
             updateFundBalance('repair', sumRepair);
             updateFundBalance('mowing', sumMowing);
             updateFundBalance('septic', sumSeptic);
             updateFundBalance('complex', sumComplex);
 
+            // Update Total Cash (Sum of Start + Collected, IGNORING EXPENSES)
             const totalCash = (val('bal_repair_start') + val('disp_repair_col_val')) + 
                               (val('bal_mowing_start') + val('disp_mowing_col_val')) + 
                               (val('bal_septic_start') + val('disp_septic_col_val')) + 
@@ -760,6 +765,7 @@
         function renderExpenses() { const tb = document.querySelector('#expensesTable tbody'); tb.innerHTML = ''; expenses.forEach((e,i) => { tb.innerHTML += `<tr class="hover:bg-gray-50"><td class="py-2 text-slate-700">${e.title}</td><td class="text-xs text-slate-400">${e.type}</td><td class="text-right font-bold text-slate-800">${(e.cost).toFixed(2)} €</td><td class="text-right no-print"><button onclick="removeExpense(${i})" class="text-rose-400 hover:text-rose-600">&times;</button></td></tr>`; }); }
         function refreshRepairsTable() { const totalRepairExpenses = expenses.filter(e => e.type === 'repair').reduce((sum, e) => sum + e.cost, 0); const savedString = localStorage.getItem(`condo_${document.getElementById('reportDate').value}`); let savedData = savedString ? JSON.parse(savedString).rows : null; renderRepairsBreakdown(totalRepairExpenses, savedData); }
         
+        // --- MODIFIED REPAIRS RENDER ---
         function renderRepairsBreakdown(totalRepairExpenses, savedData) { 
             const tbody = document.querySelector('#repairsBreakdownTable tbody'); tbody.innerHTML = ''; let totalParts = 0; appConfig.apartments.forEach(a => totalParts += a.parts); 
             let sumShare = 0; let sumPaid = 0;
@@ -788,9 +794,9 @@
                     <td class="font-bold text-slate-700">${apt.name}</td>
                     <td><input type="text" class="form-input text-xs w-full inp-repair-name" value="${savedName}" onchange="saveData(true)"></td>
                     <td class="text-center text-slate-500 text-xs">${apt.parts}%</td>
-                    <td class="text-right text-xs">${(share).toFixed(2)} €</td>
+                    <td class="text-right text-xs">${formatMoney(share)}</td>
                     <td class="text-right"><input type="number" class="form-input w-20 text-right text-xs font-bold inp-repair-paid" value="${(paidSoFar).toFixed(2)}" onchange="saveData(true); refreshRepairsTable()"></td>
-                    <td class="text-right font-bold text-xs ${colorClass}">${(diff).toFixed(2)} €</td>
+                    <td class="text-right font-bold text-xs ${colorClass}">${formatMoney(diff)}</td>
                     <td class="text-center no-print">
                         <select class="form-input text-[10px] font-bold uppercase cursor-pointer ${statusColorClass}" onchange="updateRepairStatus(this)">
                             <option value="unpaid" ${savedRepairStatus==='unpaid'?'selected':''}>НЕПЛАТЕНО</option>
