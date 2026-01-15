@@ -20,6 +20,9 @@
                     colors: {
                         brand: { 50: '#f0fdfa', 100: '#ccfbf1', 500: '#14b8a6', 600: '#0d9488', 700: '#0f766e', 800: '#115e59', 900: '#134e4a' },
                         sidebar: '#1e293b'
+                    },
+                    screens: {
+                        'xs': '400px' // Extra small screens optimization
                     }
                 }
             }
@@ -27,11 +30,11 @@
     </script>
 
     <style>
-        body { background-color: #f3f4f6; color: #1f2937; }
+        body { background-color: #f3f4f6; color: #1f2937; -webkit-font-smoothing: antialiased; }
         
         /* Sidebar & Layout */
         .sidebar-desktop { width: 260px; height: 100vh; position: fixed; left: 0; top: 0; background: #1e293b; color: white; display: none; flex-direction: column; z-index: 50; }
-        .main-content { margin-left: 0; padding-bottom: 80px; min-height: 100vh; transition: margin 0.3s; }
+        .main-content { margin-left: 0; padding-bottom: 90px; min-height: 100vh; transition: margin 0.3s; }
         
         @media (min-width: 1024px) {
             .sidebar-desktop { display: flex; }
@@ -40,59 +43,61 @@
         }
 
         /* Cards */
-        .admin-card { background: white; border: 1px solid #e5e7eb; border-radius: 8px; box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05); }
-        .admin-header { border-bottom: 1px solid #f3f4f6; padding: 12px 16px; background: #f9fafb; border-radius: 8px 8px 0 0; }
+        .admin-card { background: white; border: 1px solid #e5e7eb; border-radius: 12px; box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05); transition: transform 0.1s; }
+        .admin-header { border-bottom: 1px solid #f3f4f6; padding: 12px 16px; background: #f9fafb; border-radius: 12px 12px 0 0; }
         .admin-body { padding: 16px; }
 
-        /* Inputs - Official Form Style */
+        /* Inputs - Official Form Style (Mobile Optimized) */
         .form-input { 
             background-color: #fff; 
             border: 1px solid #d1d5db; 
-            border-radius: 6px; 
-            padding: 6px 10px; 
-            font-size: 0.875rem; 
+            border-radius: 8px; 
+            padding: 8px 10px; /* Bigger padding for touch */
+            font-size: 16px; /* Prevents iOS zoom */
             width: 100%; 
             transition: all 0.2s;
             color: #111827;
+            -webkit-appearance: none;
         }
-        .form-input:focus { border-color: #0d9488; outline: none; ring: 1px solid #0d9488; box-shadow: 0 0 0 1px #0d9488; }
+        @media (min-width: 640px) {
+            .form-input { font-size: 0.875rem; padding: 6px 10px; }
+        }
+        .form-input:focus { border-color: #0d9488; outline: none; ring: 2px solid #ccfbf1; }
         
         /* Table Styles */
         .data-table { width: 100%; border-collapse: separate; border-spacing: 0; }
-        .data-table th { background: #f9fafb; color: #4b5563; font-weight: 600; text-transform: uppercase; font-size: 11px; letter-spacing: 0.05em; padding: 10px; border-bottom: 1px solid #e5e7eb; text-align: left; }
-        .data-table td { padding: 8px; border-bottom: 1px solid #f3f4f6; font-size: 13px; vertical-align: middle; }
+        .data-table th { background: #f9fafb; color: #4b5563; font-weight: 600; text-transform: uppercase; font-size: 11px; letter-spacing: 0.05em; padding: 12px 8px; border-bottom: 1px solid #e5e7eb; text-align: left; white-space: nowrap; }
+        .data-table td { padding: 8px; border-bottom: 1px solid #f3f4f6; font-size: 13px; vertical-align: middle; min-width: 60px; } /* Ensure min-width for mobile */
         .data-table tr:hover td { background-color: #f9fafb; }
         .data-table tr:last-child td { border-bottom: none; }
 
         /* Sticky Columns */
-        .sticky-check { position: sticky; left: 0; background: white; z-index: 10; border-right: 1px solid #e5e7eb; }
-        .sticky-apt { position: sticky; left: 40px; background: white; z-index: 10; border-right: 2px solid #e5e7eb; }
+        .sticky-check { position: sticky; left: 0; background: white; z-index: 10; border-right: 1px solid #e5e7eb; width: 40px; }
+        .sticky-apt { position: sticky; left: 40px; background: white; z-index: 10; border-right: 2px solid #e5e7eb; width: 50px; }
         tr:hover .sticky-check, tr:hover .sticky-apt { background-color: #f9fafb; }
         thead .sticky-check, thead .sticky-apt { background: #f9fafb; z-index: 20; }
 
         /* Buttons */
-        .btn-primary { background-color: #0f766e; color: white; border-radius: 6px; padding: 8px 16px; font-size: 13px; font-weight: 600; transition: bg 0.2s; box-shadow: 0 1px 2px rgba(0,0,0,0.1); display: flex; align-items: center; justify-content: center; gap: 5px;}
-        .btn-primary:hover { background-color: #115e59; }
-        .btn-secondary { background-color: white; color: #374151; border: 1px solid #d1d5db; border-radius: 6px; padding: 8px 16px; font-size: 13px; font-weight: 600; transition: bg 0.2s; display: flex; align-items: center; justify-content: center; gap: 5px;}
-        .btn-secondary:hover { background-color: #f9fafb; border-color: #9ca3af; }
+        .btn-primary { background-color: #0f766e; color: white; border-radius: 8px; padding: 10px 16px; font-size: 14px; font-weight: 600; transition: all 0.2s; box-shadow: 0 2px 4px rgba(15, 118, 110, 0.2); display: flex; align-items: center; justify-content: center; gap: 6px; }
+        .btn-primary:active { transform: scale(0.97); }
+        .btn-secondary { background-color: white; color: #374151; border: 1px solid #d1d5db; border-radius: 8px; padding: 10px 16px; font-size: 14px; font-weight: 600; transition: all 0.2s; display: flex; align-items: center; justify-content: center; gap: 6px; }
+        .btn-secondary:active { background-color: #f3f4f6; }
         
-        .btn-icon { width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; border-radius: 6px; transition: all 0.2s; }
+        .btn-icon { width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; border-radius: 8px; transition: all 0.2s; }
         .btn-icon-unpaid { color: #9ca3af; border: 1px solid #e5e7eb; background: #fff; }
-        .btn-icon-unpaid:hover { color: #4b5563; border-color: #9ca3af; }
-        .btn-icon-paid { background: #ecfdf5; color: #059669; border: 1px solid #6ee7b7; }
+        .btn-icon-paid { background: #ecfdf5; color: #059669; border: 1px solid #6ee7b7; box-shadow: 0 1px 2px rgba(0,0,0,0.05); }
 
         /* Row selected */
         .row-selected td { background-color: #f0fdfa !important; }
 
-        /* Animations */
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
-        .animate-in { animation: fadeIn 0.3s ease-out; }
-
         /* Mobile Bottom Nav */
-        .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: white; border-top: 1px solid #e5e7eb; padding: 8px; display: flex; justify-content: space-around; z-index: 50; box-shadow: 0 -4px 6px -1px rgba(0,0,0,0.05); }
-        .nav-item { display: flex; flex-direction: column; align-items: center; gap: 2px; color: #6b7280; font-size: 10px; font-weight: 600; padding: 4px 12px; border-radius: 8px; }
-        .nav-item:active { color: #0f766e; background: #f0fdfa; }
-        .nav-item i { font-size: 20px; margin-bottom: 2px; }
+        .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: white; border-top: 1px solid #e5e7eb; padding: 8px 12px 20px 12px; display: flex; justify-content: space-between; z-index: 50; box-shadow: 0 -4px 20px rgba(0,0,0,0.05); }
+        .nav-item { display: flex; flex-direction: column; align-items: center; gap: 3px; color: #6b7280; font-size: 10px; font-weight: 600; padding: 6px 12px; border-radius: 12px; transition: all 0.2s; flex: 1; }
+        .nav-item:active { color: #0f766e; background: #f0fdfa; transform: scale(0.95); }
+        .nav-item i { font-size: 22px; margin-bottom: 2px; }
+
+        /* Mobile Specific Grid Overrides */
+        .fund-card-mobile { display: flex; flex-direction: column; justify-content: space-between; height: 100%; }
 
         @media print {
             .sidebar-desktop, .bottom-nav, .no-print { display: none !important; }
@@ -145,32 +150,35 @@
         </div>
     </aside>
 
-    <div class="lg:hidden bg-white border-b border-gray-200 p-4 sticky top-0 z-40 flex justify-between items-center no-print shadow-sm">
+    <div class="lg:hidden bg-white border-b border-gray-200 p-3 sticky top-0 z-40 flex justify-between items-center no-print shadow-sm">
         <div class="flex items-center gap-2">
             <div class="w-8 h-8 bg-brand-600 rounded-lg flex items-center justify-center text-white"><i class="ri-building-4-fill"></i></div>
-            <span class="font-bold text-slate-800">Блок 7Д</span>
+            <div>
+                <h1 class="font-bold text-slate-800 leading-none">Блок 7Д</h1>
+                <span class="text-[10px] text-slate-500 font-bold uppercase">Pro</span>
+            </div>
         </div>
         <div class="flex gap-2">
-            <button onclick="pullFromGitHub()" class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-gray-600 active:bg-gray-200"><i class="ri-download-cloud-line"></i></button>
-            <button onclick="pushToGitHub()" class="w-8 h-8 rounded-full bg-brand-50 flex items-center justify-center text-brand-600 active:bg-brand-100"><i class="ri-upload-cloud-line"></i></button>
-            <button onclick="openSettings()" class="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-slate-600 active:bg-slate-200"><i class="ri-settings-4-line"></i></button>
+            <button onclick="pullFromGitHub()" class="w-9 h-9 rounded-full bg-gray-50 border border-gray-200 flex items-center justify-center text-gray-600 active:bg-gray-200"><i class="ri-download-cloud-line text-lg"></i></button>
+            <button onclick="pushToGitHub()" class="w-9 h-9 rounded-full bg-brand-50 border border-brand-100 flex items-center justify-center text-brand-600 active:bg-brand-100"><i class="ri-upload-cloud-line text-lg"></i></button>
+            <button onclick="openSettings()" class="w-9 h-9 rounded-full bg-slate-50 border border-slate-200 flex items-center justify-center text-slate-600 active:bg-slate-200"><i class="ri-settings-4-line text-lg"></i></button>
         </div>
     </div>
 
-    <div class="main-content p-4 lg:p-8 animate-in">
+    <div class="main-content p-3 lg:p-8 animate-in">
         
         <div class="flex flex-col sm:flex-row justify-between items-center mb-6 gap-4 no-print">
-            <div class="admin-card px-4 py-2 flex items-center gap-4">
-                <button onclick="changeYear(-1)" class="text-slate-400 hover:text-brand-600 transition"><i class="ri-arrow-left-s-line text-xl"></i></button>
+            <div class="admin-card px-4 py-2 flex items-center justify-between w-full sm:w-auto gap-4">
+                <button onclick="changeYear(-1)" class="text-slate-400 hover:text-brand-600 p-2"><i class="ri-arrow-left-s-line text-xl"></i></button>
                 <div class="text-center cursor-pointer" onclick="document.getElementById('reportDate').showPicker()">
-                    <span class="text-xs font-bold text-slate-400 uppercase tracking-wider block">Отчетен период</span>
-                    <h2 class="text-xl font-bold text-slate-800" id="displayYear">2026</h2>
+                    <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Отчетен период</span>
+                    <h2 class="text-2xl font-bold text-slate-800 leading-none" id="displayYear">2026</h2>
                     <input type="month" id="reportDate" class="hidden">
                 </div>
-                <button onclick="changeYear(1)" class="text-slate-400 hover:text-brand-600 transition"><i class="ri-arrow-right-s-line text-xl"></i></button>
+                <button onclick="changeYear(1)" class="text-slate-400 hover:text-brand-600 p-2"><i class="ri-arrow-right-s-line text-xl"></i></button>
             </div>
             
-            <div class="flex gap-2 items-center">
+            <div class="flex gap-2 items-center w-full sm:w-auto justify-end">
                 <span class="bg-blue-50 text-blue-700 border border-blue-200 px-3 py-1.5 rounded-md text-xs font-bold flex items-center gap-1"><i class="ri-money-euro-circle-line"></i> EUR (€)</span>
                 <button onclick="window.print()" class="btn-secondary hidden sm:flex items-center gap-2"><i class="ri-printer-line"></i> Принт</button>
             </div>
@@ -181,58 +189,58 @@
             <p id="printDateLabel" class="text-lg text-slate-600 mt-2 font-medium"></p>
         </div>
 
-        <div class="grid grid-cols-3 sm:grid-cols-6 lg:grid-cols-12 gap-2 mb-6 no-print" id="monthsGrid"></div>
+        <div class="grid grid-cols-4 sm:grid-cols-6 lg:grid-cols-12 gap-2 mb-6 no-print" id="monthsGrid"></div>
 
-        <div class="fund-print-container grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 mb-6">
-            <div class="admin-card p-4 border-l-4 border-rose-500">
-                <div class="flex justify-between items-start mb-2">
-                    <span class="text-xs font-bold text-slate-500 uppercase">Ремонт</span>
-                    <i class="ri-tools-fill text-rose-500 bg-rose-50 p-1 rounded"></i>
+        <div class="fund-print-container grid grid-cols-2 lg:grid-cols-5 gap-3 mb-6">
+            <div class="admin-card p-3 border-l-4 border-rose-500 fund-card-mobile">
+                <div class="flex justify-between items-start mb-1">
+                    <span class="text-[10px] font-bold text-slate-500 uppercase">Ремонт</span>
+                    <i class="ri-tools-fill text-rose-500 text-xs"></i>
                 </div>
-                <div class="text-2xl font-bold text-slate-800 mb-2" id="bal_repair_end">0.00 €</div>
-                <div class="flex items-center justify-between text-xs pt-2 border-t border-gray-100">
-                   <div class="flex items-center gap-1 text-slate-400">Нач: <input type="number" id="bal_repair_start" value="0" class="w-12 bg-transparent text-slate-600 font-bold border-b border-dotted border-slate-300 text-center focus:border-rose-500" onchange="calculate()"></div>
-                   <div class="flex gap-1"><span class="text-emerald-600 bg-emerald-50 px-1 rounded">+<span id="disp_repair_col">0</span></span> <span class="text-rose-600 bg-rose-50 px-1 rounded">-<span id="disp_repair_spent">0</span></span></div>
+                <div class="text-lg sm:text-2xl font-bold text-slate-800 mb-1" id="bal_repair_end">0.00 €</div>
+                <div class="flex flex-col xl:flex-row items-start xl:items-center text-[10px] gap-1">
+                   <div class="flex items-center gap-1 text-slate-400">Нач: <input type="number" id="bal_repair_start" value="0" class="w-10 bg-transparent text-slate-600 font-bold border-b border-dotted border-slate-300 text-center" onchange="calculate()"></div>
+                   <div class="flex gap-1"><span class="text-emerald-600">+<span id="disp_repair_col">0</span></span> <span class="text-rose-600">-<span id="disp_repair_spent">0</span></span></div>
                 </div>
             </div>
 
-            <div class="admin-card p-4 border-l-4 border-emerald-500">
-                <div class="flex justify-between items-start mb-2">
-                    <span class="text-xs font-bold text-slate-500 uppercase">Косене</span>
-                    <i class="ri-plant-fill text-emerald-500 bg-emerald-50 p-1 rounded"></i>
+            <div class="admin-card p-3 border-l-4 border-emerald-500 fund-card-mobile">
+                <div class="flex justify-between items-start mb-1">
+                    <span class="text-[10px] font-bold text-slate-500 uppercase">Косене</span>
+                    <i class="ri-plant-fill text-emerald-500 text-xs"></i>
                 </div>
-                <div class="text-2xl font-bold text-slate-800 mb-2" id="bal_mowing_end">0.00 €</div>
-                <div class="flex items-center justify-between text-xs pt-2 border-t border-gray-100">
-                   <div class="flex items-center gap-1 text-slate-400">Нач: <input type="number" id="bal_mowing_start" value="0" class="w-12 bg-transparent text-slate-600 font-bold border-b border-dotted border-slate-300 text-center focus:border-emerald-500" onchange="calculate()"></div>
-                   <div class="flex gap-1"><span class="text-emerald-600 bg-emerald-50 px-1 rounded">+<span id="disp_mowing_col">0</span></span> <span class="text-rose-600 bg-rose-50 px-1 rounded">-<span id="disp_mowing_spent">0</span></span></div>
-                </div>
-            </div>
-
-            <div class="admin-card p-4 border-l-4 border-violet-500">
-                <div class="flex justify-between items-start mb-2">
-                    <span class="text-xs font-bold text-slate-500 uppercase">Яма</span>
-                    <i class="ri-drop-fill text-violet-500 bg-violet-50 p-1 rounded"></i>
-                </div>
-                <div class="text-2xl font-bold text-slate-800 mb-2" id="bal_septic_end">0.00 €</div>
-                <div class="flex items-center justify-between text-xs pt-2 border-t border-gray-100">
-                   <div class="flex items-center gap-1 text-slate-400">Нач: <input type="number" id="bal_septic_start" value="0" class="w-12 bg-transparent text-slate-600 font-bold border-b border-dotted border-slate-300 text-center focus:border-violet-500" onchange="calculate()"></div>
-                   <div class="flex gap-1"><span class="text-emerald-600 bg-emerald-50 px-1 rounded">+<span id="disp_septic_col">0</span></span> <span class="text-rose-600 bg-rose-50 px-1 rounded">-<span id="disp_septic_spent">0</span></span></div>
+                <div class="text-lg sm:text-2xl font-bold text-slate-800 mb-1" id="bal_mowing_end">0.00 €</div>
+                <div class="flex flex-col xl:flex-row items-start xl:items-center text-[10px] gap-1">
+                   <div class="flex items-center gap-1 text-slate-400">Нач: <input type="number" id="bal_mowing_start" value="0" class="w-10 bg-transparent text-slate-600 font-bold border-b border-dotted border-slate-300 text-center" onchange="calculate()"></div>
+                   <div class="flex gap-1"><span class="text-emerald-600">+<span id="disp_mowing_col">0</span></span> <span class="text-rose-600">-<span id="disp_mowing_spent">0</span></span></div>
                 </div>
             </div>
 
-            <div class="admin-card p-4 border-l-4 border-amber-500">
-                <div class="flex justify-between items-start mb-2">
-                    <span class="text-xs font-bold text-slate-500 uppercase">Комплекс</span>
-                    <i class="ri-community-fill text-amber-500 bg-amber-50 p-1 rounded"></i>
+            <div class="admin-card p-3 border-l-4 border-violet-500 fund-card-mobile">
+                <div class="flex justify-between items-start mb-1">
+                    <span class="text-[10px] font-bold text-slate-500 uppercase">Яма</span>
+                    <i class="ri-drop-fill text-violet-500 text-xs"></i>
                 </div>
-                <div class="text-2xl font-bold text-slate-800 mb-2" id="bal_complex_end">0.00 €</div>
-                <div class="flex items-center justify-between text-xs pt-2 border-t border-gray-100">
-                   <div class="flex items-center gap-1 text-slate-400">Нач: <input type="number" id="bal_complex_start" value="0" class="w-12 bg-transparent text-slate-600 font-bold border-b border-dotted border-slate-300 text-center focus:border-amber-500" onchange="calculate()"></div>
-                   <div class="flex gap-1"><span class="text-emerald-600 bg-emerald-50 px-1 rounded">+<span id="disp_complex_col">0</span></span> <span class="text-rose-600 bg-rose-50 px-1 rounded">-<span id="disp_complex_spent">0</span></span></div>
+                <div class="text-lg sm:text-2xl font-bold text-slate-800 mb-1" id="bal_septic_end">0.00 €</div>
+                <div class="flex flex-col xl:flex-row items-start xl:items-center text-[10px] gap-1">
+                   <div class="flex items-center gap-1 text-slate-400">Нач: <input type="number" id="bal_septic_start" value="0" class="w-10 bg-transparent text-slate-600 font-bold border-b border-dotted border-slate-300 text-center" onchange="calculate()"></div>
+                   <div class="flex gap-1"><span class="text-emerald-600">+<span id="disp_septic_col">0</span></span> <span class="text-rose-600">-<span id="disp_septic_spent">0</span></span></div>
                 </div>
             </div>
 
-            <div class="admin-card bg-slate-800 text-white border-none p-4 flex flex-col justify-between relative overflow-hidden">
+            <div class="admin-card p-3 border-l-4 border-amber-500 fund-card-mobile">
+                <div class="flex justify-between items-start mb-1">
+                    <span class="text-[10px] font-bold text-slate-500 uppercase">Комплекс</span>
+                    <i class="ri-community-fill text-amber-500 text-xs"></i>
+                </div>
+                <div class="text-lg sm:text-2xl font-bold text-slate-800 mb-1" id="bal_complex_end">0.00 €</div>
+                <div class="flex flex-col xl:flex-row items-start xl:items-center text-[10px] gap-1">
+                   <div class="flex items-center gap-1 text-slate-400">Нач: <input type="number" id="bal_complex_start" value="0" class="w-10 bg-transparent text-slate-600 font-bold border-b border-dotted border-slate-300 text-center" onchange="calculate()"></div>
+                   <div class="flex gap-1"><span class="text-emerald-600">+<span id="disp_complex_col">0</span></span> <span class="text-rose-600">-<span id="disp_complex_spent">0</span></span></div>
+                </div>
+            </div>
+
+            <div class="admin-card bg-slate-800 text-white border-none p-4 flex flex-col justify-between relative overflow-hidden col-span-2 lg:col-span-1">
                 <div class="absolute right-0 top-0 w-20 h-20 bg-white/5 rounded-full -mr-6 -mt-6"></div>
                 <div>
                     <span class="text-[10px] font-bold text-slate-300 uppercase tracking-wide">НАЛИЧНОСТ КАСА</span>
@@ -285,6 +293,18 @@
             </div>
         </div>
 
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6 no-print">
+            <button onclick="calculate()" class="btn-primary flex-col py-3 h-auto"><i class="ri-calculator-line text-xl"></i> Изчисли</button>
+            <button onclick="saveData()" class="btn-primary flex-col py-3 h-auto bg-emerald-600 hover:bg-emerald-700"><i class="ri-save-3-line text-xl"></i> Запази</button>
+            <button onclick="generateViberMessage()" class="btn-primary flex-col py-3 h-auto bg-violet-600 hover:bg-violet-700"><i class="ri-chat-3-line text-xl"></i> Viber Общ</button>
+            <button onclick="generateRepairViberReport()" class="btn-primary flex-col py-3 h-auto bg-amber-500 hover:bg-amber-600"><i class="ri-hammer-line text-xl"></i> Viber Рем.</button>
+            
+            <button onclick="generateFullReport()" class="btn-secondary flex-col py-3 h-auto"><i class="ri-file-list-3-line text-xl"></i> Отчет</button>
+            <button onclick="exportToCSV()" class="btn-secondary flex-col py-3 h-auto"><i class="ri-file-excel-2-line text-xl"></i> Excel</button>
+            <button onclick="startNewMonth()" class="btn-secondary flex-col py-3 h-auto text-slate-600"><i class="ri-calendar-event-fill text-xl"></i> Нов Месец</button>
+            <button onclick="window.print()" class="btn-secondary flex-col py-3 h-auto text-slate-800"><i class="ri-printer-fill text-xl"></i> Принт</button>
+        </div>
+
         <div class="admin-card overflow-hidden">
             <div class="admin-header flex justify-between items-center">
                 <h3 class="text-sm font-bold text-slate-700">🗓️ МЕСЕЧЕН ОТЧЕТ</h3>
@@ -299,15 +319,15 @@
                         <tr>
                             <th class="sticky-check w-10 text-center"><input type="checkbox" id="selectAllCheckbox" class="custom-checkbox" onchange="toggleSelectAll()"></th>
                             <th class="sticky-apt w-16">Ап.</th>
-                            <th>Име</th>
+                            <th class="min-w-[140px]">Име</th>
                             <th class="text-center">Хора</th>
                             <th class="text-center">Гараж</th>
                             <th class="text-center">EV</th>
                             <th class="text-right">Сметка (€)</th>
                             <th class="text-right text-rose-500">Стари (€)</th>
                             <th class="text-right">ОБЩО (€)</th>
-                            <th class="text-center no-print">Статус</th>
-                            <th class="no-print">Коментар</th>
+                            <th class="text-center no-print min-w-[100px]">Статус</th>
+                            <th class="no-print min-w-[120px]">Коментар</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-gray-100"></tbody>
@@ -323,7 +343,7 @@
             </div>
         </div>
 
-        <div class="admin-card overflow-hidden">
+        <div class="admin-card overflow-hidden mt-6">
              <div class="admin-header text-sm font-bold text-slate-700">📊 СЪБИРАЕМОСТ</div>
              <div class="overflow-x-auto">
                 <table class="w-full text-sm text-left">
@@ -340,7 +360,7 @@
             </div>
         </div>
 
-        <div class="expenses-print-container grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div class="expenses-print-container grid grid-cols-1 lg:grid-cols-3 gap-6 mt-6">
             <div class="lg:col-span-2 admin-card">
                 <div class="admin-header text-sm font-bold text-slate-700">📉 ТЕКУЩИ РАЗХОДИ</div>
                 <div class="admin-body">
@@ -370,20 +390,20 @@
             </div>
         </div>
 
-        <div class="admin-card overflow-hidden">
+        <div class="admin-card overflow-hidden mt-6">
             <div class="admin-header text-sm font-bold text-rose-600">🛠️ СПРАВКА: Разпределение на разходите за РЕМОНТИ (По % Ид. Части)</div>
             <div class="overflow-x-auto">
                 <table class="data-table" id="repairsBreakdownTable">
                     <thead>
                         <tr>
                             <th class="w-16">Ап.</th>
-                            <th>Име</th>
+                            <th class="min-w-[120px]">Име</th>
                             <th class="text-center">% Ид.Ч.</th>
                             <th class="text-right">Дял <span class="currency-symbol text-[10px]">€</span></th>
                             <th class="text-right bg-rose-50/50">Платил (€)</th>
                             <th class="text-right">Баланс <span class="currency-symbol text-[10px]">€</span></th>
                             <th class="text-center no-print">Статус</th>
-                            <th class="text-left no-print">Коментар</th>
+                            <th class="text-left no-print min-w-[120px]">Коментар</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-gray-100"></tbody>
@@ -653,7 +673,7 @@
                     <td class="text-right"><input type="number" class="form-input inp-old-debt w-20 text-right text-rose-600 font-bold" value="${oldDebt.toFixed(2)}"></td>
                     <td class="text-right font-black text-slate-800 res-grand-total">0</td>
                     <input type="hidden" class="res-grand-total-val" value="0">
-                    <td class="text-center no-print"><select class="form-input text-xs font-bold text-center uppercase cursor-pointer ${status==='paid'?'text-emerald-700 bg-emerald-50 border-emerald-200':'text-rose-700 bg-rose-50 border-rose-200'} status-select" onchange="changeStatus(this)"><option value="unpaid" ${status==='unpaid'?'selected':''}>НЕПЛАТЕНО</option><option value="paid" ${status==='paid'?'selected':''}>ПЛАТЕНО</option></select></td>
+                    <td class="text-center no-print"><select class="form-input text-xs font-bold text-center uppercase cursor-pointer ${status==='paid'?'text-emerald-700 bg-emerald-50 border-emerald-200':'text-rose-700 bg-rose-50 border-rose-200'} status-select" onchange="changeStatus(this)"><option value="unpaid">НЕПЛАТЕНО</option><option value="paid" ${status==='paid'?'selected':''}>ПЛАТЕНО</option></select></td>
                     <td class="no-print"><input type="text" class="form-input inp-comment w-full text-xs text-gray-500 italic" value="${comment}" placeholder="..."></td>`;
                 tbody.appendChild(tr);
             });
@@ -817,10 +837,24 @@
         }
 
         function updateRepairStatus(sel) { 
-             // Visual Update
-             if(sel.value === 'paid') sel.className = "form-input text-[10px] font-bold uppercase cursor-pointer text-emerald-700 bg-emerald-50 border-emerald-200";
-             else if(sel.value === 'partial') sel.className = "form-input text-[10px] font-bold uppercase cursor-pointer text-amber-700 bg-amber-50 border-amber-200";
-             else sel.className = "form-input text-[10px] font-bold uppercase cursor-pointer text-rose-700 bg-rose-50 border-rose-200";
+            const row = sel.closest('tr');
+            const paidInput = row.querySelector('.inp-repair-paid');
+            // Re-calculate the exact share for this apartment to autofill it
+            const totalRepairExpenses = expenses.filter(e => e.type === 'repair').reduce((sum, e) => sum + e.cost, 0);
+            let totalParts = 0; appConfig.apartments.forEach(a => totalParts += a.parts);
+            const aptName = row.cells[0].innerText.trim();
+            const apt = appConfig.apartments.find(a => a.name === aptName);
+            const share = (totalRepairExpenses * apt.parts) / totalParts;
+
+            if (sel.value === 'paid') {
+                paidInput.value = share.toFixed(2);
+                sel.className = "form-input text-[10px] font-bold uppercase cursor-pointer text-emerald-700 bg-emerald-50 border-emerald-200";
+            } else if (sel.value === 'unpaid') {
+                paidInput.value = '0.00';
+                sel.className = "form-input text-[10px] font-bold uppercase cursor-pointer text-rose-700 bg-rose-50 border-rose-200";
+            } else {
+                sel.className = "form-input text-[10px] font-bold uppercase cursor-pointer text-amber-700 bg-amber-50 border-amber-200";
+            }
              
              saveData(true); 
              refreshRepairsTable(); 
